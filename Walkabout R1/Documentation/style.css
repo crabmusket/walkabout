@@ -23,6 +23,13 @@ img {
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 1em;
+	max-width: 468pt;
+}
+
+img.inline {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
 }
 
 /** Headings and paragraphs **/
@@ -45,6 +52,7 @@ p {
 p.title {
 	text-align: center;
 	font-weight: bold;
+	margin: 1em 0em;
 }
 
 p.important {
@@ -53,12 +61,17 @@ p.important {
 	width: 400pt;
 	padding: 5px;
 	background: #FFFFA0;
+	margin: 1em 0em;
 }
 
 p.caption {
 	text-align: center;
 	font-style: italic;
 	margin-bottom: 1em;
+}
+
+td {
+	vertical-align: top;
 }
 
 /** Code and path formatting **/
@@ -81,6 +94,14 @@ ol.toc li {
 
 ol li {
 	margin-top: 1em;
+}
+
+ol ol {
+	list-style-type: /*none;*/lower-alpha;
+}
+
+ol ol ol {
+	list-style-type: none;/*lower-roman;*/
 }
 
 /** Special 'tiles' list **/
