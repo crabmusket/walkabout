@@ -1302,7 +1302,7 @@ namespace Nav {
 #ifdef WALKABOUT_DEMO
       Con::executef("OnWalkaboutDemoSave");
       return false;
-#endif
+#else
       if(!dStrlen(mFileName) || !nm)
          return false;
 
@@ -1351,6 +1351,7 @@ namespace Nav {
       fclose(fp);
 
       return true;
+#endif
    }
 
    void NavMesh::write(Stream &stream, U32 tabStop, U32 flags)
