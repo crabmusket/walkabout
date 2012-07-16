@@ -43,7 +43,6 @@ GuiNavEditorCtrl::GuiNavEditorCtrl()
    mMesh = NULL;
    mCurTile = mTile = -1;
    mPlayer = mCurPlayer = NULL;
-   resetModifierKeys();
    mSpawnClass = mSpawnDatablock = "";
    mLinkStart = Point3F::Max;
    mLink = mCurLink = -1;
@@ -94,9 +93,7 @@ void GuiNavEditorCtrl::onSleep()
 {
    Parent::onSleep();
 
-   mMode = mSelectMode;
-
-   resetModifierKeys();
+   //mMode = mSelectMode;
 }
 
 void GuiNavEditorCtrl::selectMesh(Nav::NavMesh *mesh)
@@ -291,6 +288,11 @@ void GuiNavEditorCtrl::on3DMouseDown(const Gui3DMouseEvent & event)
 
    RayInfo ri;
 
+   U8 keys = Input::getModifierKeys();
+   bool shift = keys & SI_LSHIFT;
+   bool ctrl = keys & SI_LCTRL;
+   bool alt = keys & SI_LALT;
+
    if(mMode == mLinkMode && !mMesh.isNull())
    {
       if(gServerContainer.castRay(startPnt, endPnt, StaticObjectType, &ri))
@@ -318,7 +320,7 @@ void GuiNavEditorCtrl::on3DMouseDown(const Gui3DMouseEvent & event)
                if(mLinkStart != Point3F::Max)
                {
                   mMesh->addLink(mLinkStart, ri.point);
-                  if(!mShift)
+                  if(!shift)
                      mLinkStart = Point3F::Max;
                }
                else
@@ -347,13 +349,13 @@ void GuiNavEditorCtrl::on3DMouseDown(const Gui3DMouseEvent & event)
    if(mMode == mTestMode)
    {
       // Spawn new character
-      if(mCtrl)
+      if(ctrl)
       {
          if(gServerContainer.castRay(startPnt, endPnt, StaticObjectType, &ri))
             spawnPlayer(ri.point);
       }
       // Deselect character
-      else if(mShift)
+      else if(shift)
       {
          mPlayer = NULL;
          Con::executef(this, "onPlayerDeselected");
@@ -468,28 +470,6 @@ void GuiNavEditorCtrl::on3DMouseEnter(const Gui3DMouseEvent & event)
 
 void GuiNavEditorCtrl::on3DMouseLeave(const Gui3DMouseEvent & event)
 {
-}
-
-bool GuiNavEditorCtrl::onKeyDown(const GuiEvent& event)
-{
-   switch(event.keyCode)
-   {
-   case KEY_LALT:     mAlt   = true; break;
-   case KEY_LSHIFT:   mShift = true; break;
-   case KEY_LCONTROL: mCtrl  = true; break;
-   }
-   return false;
-}
-
-bool GuiNavEditorCtrl::onKeyUp(const GuiEvent& event)
-{
-   switch(event.keyCode)
-   {
-   case KEY_LALT:     mAlt   = false; break;
-   case KEY_LSHIFT:   mShift = false; break;
-   case KEY_LCONTROL: mCtrl  = false; break;
-   }
-   return false;
 }
 
 void GuiNavEditorCtrl::updateGuiInfo()

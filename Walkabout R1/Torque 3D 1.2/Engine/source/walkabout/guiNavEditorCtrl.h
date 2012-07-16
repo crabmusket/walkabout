@@ -54,8 +54,6 @@ public:
 
    virtual void onSleep();
    virtual void onRender(Point2I offset, const RectI &updateRect);
-   bool onKeyDown(const GuiEvent &event);
-   bool onKeyUp(const GuiEvent &event);
 
    /// @}
 
@@ -116,17 +114,6 @@ protected:
    bool mIsDirty;
 
    String mMode;
-
-   /// @name Modifier keys
-   /// @{
-
-   bool mShift;
-   bool mAlt;
-   bool mCtrl;
-
-   void resetModifierKeys() { mShift = mAlt = mCtrl = false; }
-
-   /// @}
 
    /// Currently-selected NavMesh.
    SimObjectPtr<Nav::NavMesh> mMesh;
