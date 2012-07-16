@@ -571,20 +571,20 @@ void AIPlayer::moveToNode(S32 node)
    mPathData.index = node;
 }
 
-void AIPlayer::setPathDestination(const Point3F &pos)
+bool AIPlayer::setPathDestination(const Point3F &pos)
 {
    // Pathfinding only happens on the server.
    if(!isServerObject())
-      return;
+      return false;
 
    if(!getNavMesh())
       updateNavMesh();
    // If we can't find a mesh, just move regularly.
-   //if(!getNavMesh())
-   //{
-   //   setMoveDestination(pos);
-   //   return;
-   //}
+   if(!getNavMesh())
+   {
+      //setMoveDestination(pos);
+      return false;
+   }
 
    // Create a new path.
    Nav::NavPath *path = new Nav::NavPath();
@@ -600,11 +600,11 @@ void AIPlayer::setPathDestination(const Point3F &pos)
       if(!path->registerObject())
       {
          delete path;
-         return;
+         return false;
       }
    }
    else
-      return;
+      return false;
 
    if(path->success())
    {
@@ -616,26 +616,29 @@ void AIPlayer::setPathDestination(const Point3F &pos)
       mPathData.owned = true;
       // Skip node 0, which we are currently standing on.
       moveToNode(1);
+      return true;
    }
    else
    {
       // Just move normally if we can't path.
       //setMoveDestination(pos, true);
       //return;
-      throwCallback("onPathFailed");
+      //throwCallback("onPathFailed");
       path->deleteObject();
+      return false;
    }
 }
 
-DefineEngineMethod(AIPlayer, setPathDestination, void, (Point3F goal),,
+DefineEngineMethod(AIPlayer, setPathDestination, bool, (Point3F goal),,
    "@brief Tells the AI to find a path to the location provided\n\n"
 
-   "@param goal Coordinates in world space representing location to move to.\n\n"
+   "@param goal Coordinates in world space representing location to move to.\n"
+   "@return True if a path was found.\n\n"
 
    "@see getPathDestination()\n"
    "@see setMoveDestination()\n")
 {
-   object->setPathDestination(goal);
+   return object->setPathDestination(goal);
 }
 
 Point3F AIPlayer::getPathDestination() const
@@ -744,10 +747,10 @@ static void findCoverCallback(SceneObject *obj, void *key)
    }
 }
 
-void AIPlayer::findCover(const Point3F &from, F32 radius)
+bool AIPlayer::findCover(const Point3F &from, F32 radius)
 {
    if(radius <= 0)
-      return;
+      return false;
 
    // Create a search state.
    CoverSearch s;
@@ -764,20 +767,22 @@ void AIPlayer::findCover(const Point3F &from, F32 radius)
    // Go to cover!
    if(s.point)
    {
-      setPathDestination(s.point->getPosition());
       clearCover();
       mCoverData.cover = s.point;
       s.point->setOccupied(true);
+      return setPathDestination(s.point->getPosition());
    }
+   return false;
 }
 
-DefineEngineMethod(AIPlayer, findCover, void, (Point3F from, F32 radius),,
+DefineEngineMethod(AIPlayer, findCover, bool, (Point3F from, F32 radius),,
    "@brief Tells the AI to find cover nearby.\n\n"
 
    "@param from   Location to find cover from (i.e., enemy position).\n"
-   "@param radius Distance to search for cover.\n\n")
+   "@param radius Distance to search for cover.\n"
+   "@return True if cover was found.\n\n")
 {
-   object->findCover(from, radius);
+   return object->findCover(from, radius);
 }
 
 Nav::NavMesh *AIPlayer::findNavMesh() const

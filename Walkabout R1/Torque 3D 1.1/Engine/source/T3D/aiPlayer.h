@@ -142,7 +142,7 @@ public:
    void setNavSize(NavSize size) { mNavSize = size; updateNavMesh(); }
    NavSize getNavSize() const { return mNavSize; }
 
-   void setPathDestination(const Point3F &pos);
+   bool setPathDestination(const Point3F &pos);
    Point3F getPathDestination() const;
 
    void followNavPath(Nav::NavPath *path);
@@ -150,7 +150,7 @@ public:
 
    void repath();
 
-   void findCover(const Point3F &from, F32 radius);
+   bool findCover(const Point3F &from, F32 radius);
 
    Nav::NavMesh *findNavMesh() const;
    void updateNavMesh();
