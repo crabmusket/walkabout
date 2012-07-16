@@ -1,0 +1,65 @@
+html {
+	overflow-y: scroll;
+}
+
+body {
+	max-width: 468pt;
+	padding: 72pt;
+	margin: 0px auto;
+}
+
+img {
+	display: block;
+	margin: 0px auto;
+}
+
+h1 {
+}
+
+ul {
+	list-style-type: none;
+	width: 450px;
+	margin: 20px auto;
+}
+
+li {
+	display: inline-block;
+	border: 1px solid gray;
+	/*background: #F0F0F0;*/
+	width: 200px;
+	height: 100px;
+	margin: 5px;
+	border-radius: 3px;
+}
+
+li a {
+	display: table-cell;
+	vertical-align: bottom;
+	width: 200px;
+	height: 100px;
+	margin: 0px;
+	background-position: 0px 0px;
+	text-decoration: none;
+}
+
+li a:hover {
+	background-position: 200px 0px;
+}
+
+li a p {
+	font-size: 20pt;
+	font-weight: bold;
+	font-family: "Droid Serif";
+	text-decoration: none;
+	color: black;
+}
+
+p {
+	margin: 5px;
+	font-family: "Arial";
+	font-size: 11pt;
+}
+
+p span {
+	font-weight: bold;
+}
