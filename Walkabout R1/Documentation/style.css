@@ -45,7 +45,7 @@ h3 {
 
 p {
 	margin: 5px;
-	text-indent: 1em;
+	text-indent: 1.5em;
 	font-size: 11pt;
 }
 
@@ -62,6 +62,7 @@ p.important {
 	padding: 5px;
 	background: #FFFFA0;
 	margin: 1em 0em;
+	text-indent: 0;
 }
 
 p.caption {
@@ -78,6 +79,8 @@ td {
 
 pre {
 	background: #F0F0F0;
+	margin: 1em 0;
+	padding: 1em;
 }
 
 .path {
