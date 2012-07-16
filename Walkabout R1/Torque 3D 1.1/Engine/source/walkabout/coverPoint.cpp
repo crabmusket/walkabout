@@ -87,6 +87,8 @@ bool CoverPoint::onAdd()
    if(gEditingMission)
       onEditorEnable();
 
+   addToScene();
+
    return true;
 }
 
@@ -94,6 +96,8 @@ void CoverPoint::onRemove()
 {
    if(gEditingMission)
       onEditorDisable();
+
+   removeFromScene();
 
    Parent::onRemove();
 
@@ -110,12 +114,10 @@ void CoverPoint::setTransform(const MatrixF & mat)
 void CoverPoint::onEditorEnable()
 {
    mNetFlags.set(Ghostable);
-   addToScene();
 }
 
 void CoverPoint::onEditorDisable()
 {
-   removeFromScene();
    mNetFlags.clear(Ghostable);
 }
 
