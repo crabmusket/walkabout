@@ -19,11 +19,12 @@ class AIPlayer : public Player {
 	typedef Player Parent;
 
 public:
-	enum MoveState {
-		ModeStop,
-		ModeMove,
-		ModeStuck,
-	};
+   enum MoveState {
+      ModeStop,    // AI has stopped moving.
+      ModeMove,    // AI is currently moving.
+      ModeStuck,   // AI is stuck, but wants to move.
+      ModeSlowing, // AI is slowing down as it reaches it's destination.
+   };
 
 private:
    MoveState mMoveState;

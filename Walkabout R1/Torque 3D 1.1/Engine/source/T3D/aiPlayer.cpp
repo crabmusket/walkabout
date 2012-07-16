@@ -384,14 +384,15 @@ bool AIPlayer::getAIMove(Move *movePtr)
                speed *= dist / maxDist;
             movePtr->x *= speed;
             movePtr->y *= speed;
+
+            mMoveState = ModeSlowing;
          }
          else {
             movePtr->x *= mMoveSpeed;
             movePtr->y *= mMoveSpeed;
-         }
 
-         // Reset a previous stuck mode
-         mMoveState = ModeMove;
+            mMoveState = ModeMove;
+         }
 
          if (mMoveStuckTestCountdown > 0)
          {
@@ -401,9 +402,15 @@ bool AIPlayer::getAIMove(Move *movePtr)
          {
             // We should check to see if we are stuck...
             F32 locationDelta = (location - mLastLocation).len();
-            if (locationDelta < mMoveStuckTolerance) {
-               mMoveState = ModeStuck;
-               onStuck();
+            if (locationDelta < mMoveStuckTolerance && mDamageState == Enabled) {
+               // If we are slowing down, then it's likely that our location delta will be less than
+               // our move stuck tolerance. Because we can be both slowing and stuck
+               // we should TRY to check if we've moved. This could use better detection.
+               if ( mMoveState != ModeSlowing || locationDelta == 0 )
+               {
+                  mMoveState = ModeStuck;
+                  onStuck();
+               }
             }
          }
       }
