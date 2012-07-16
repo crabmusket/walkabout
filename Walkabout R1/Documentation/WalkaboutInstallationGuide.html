@@ -2,7 +2,7 @@
 
 <html>
 <head>
-	<title>Installation Guide| Walkabout</title>
+	<title>Installation Guide | Walkabout</title>
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
@@ -102,7 +102,7 @@
 
 	<p class="title">2. SOURCE CODE MODIFICATIONS</p>
 
-	<p>In engine directory/scene/sceneContainer.h, after:</p>
+	<p>In <span class="path">engine directory/scene/sceneContainer.h</span>, after:</p>
 
 <pre>
    /// A hint that the polyist is used for
@@ -119,7 +119,7 @@
    PLC_Navigation,
 </pre>
 
-	<p>In engine directory/T3D/convexShape.cpp, after:</p>
+	<p>In <span class="path">engine directory/T3D/convexShape.cpp</span>, after:</p>
 
 <pre>
    // Add Surfaces...
@@ -155,7 +155,7 @@
 </pre>
 
 
-	<p>In engine directory/T3D/groundPlane.cpp, replace this method:</p>
+	<p>In <span class="path">engine directory/T3D/groundPlane.cpp</span>, replace this method:</p>
 <pre>
 bool GroundPlane::buildPolyList( PolyListContext context, AbstractPolyList* polyList, const Box3F&, const SphereF& )
 {
@@ -212,7 +212,7 @@ bool GroundPlane::buildPolyList( PolyListContext context, AbstractPolyList* poly
 }
 </pre>
 
-	<p>In engine directory/terrain/terrCollision.cpp, replace this line:</p>
+	<p>In <span class="path">engine directory/terrain/terrCollision.cpp</span>, replace this line:</p>
 
 <pre>
 bool TerrainBlock::buildPolyList(PolyListContext, AbstractPolyList* polyList, const Box3F &box, const SphereF&)
@@ -256,7 +256,7 @@ bool TerrainBlock::buildPolyList(PolyListContext context, AbstractPolyList* poly
 			continue;
 </pre>
 
-	<p>In engine directory/T3D/aiPlayer.h, after:</p>
+	<p>In <span class="path">engine directory/T3D/aiPlayer.h</span>, after:</p>
 
 <pre>
 #ifndef _PLAYER_H_
@@ -371,7 +371,7 @@ protected:
    /// @}
 </pre>
 
-	<p>In engine directory.T3D/aiPlayer.cpp, after:</p>
+	<p>In <span class="path">engine directory.T3D/aiPlayer.cpp</span>, after:</p>
 
 <pre>
    mAimOffset = Point3F(0.0f, 0.0f, 0.0f);
@@ -854,7 +854,7 @@ DefineEngineMethod(AIPlayer, getNavSize, const char*, (),,
 }
 </pre>
 
-	<p>In engine directory/gfx/primBuilder.cpp, replace this:</p>
+	<p>In <span class="path">engine directory/gfx/primBuilder.cpp</span>, replace this:</p>
 
 <pre>
 #ifdef TORQUE_DEBUG
@@ -919,7 +919,7 @@ static void CheckVertexBounds()
 	
 	<p><strong>Walkabout</strong> is a navigation solution, but chances are you want your characters to do more than go where you tell them without running into stuff!
 	The <a href="http://www.garagegames.com/products/ai-starter-kit">Universal AI Starter Kit</a> is one of the premier addons providing AI for Torque 3D.
-	As such, this setion will describe how to modify the UAISK to make full use of <strong>Walkabout</strong>'s navmeshes.</p>
+	This section will describe how to modify the UAISK to make full use of <strong>Walkabout</strong>'s navmeshes.</p>
 
 	<p>First, we'll add some global variables that control how <strong>Walkabout</strong> behaves as part of the UAISK.
 	In <span class="path">game/scripts/server/UAISK/aiGlobals.cs</span>, add the following to the bottom of the file:</p>

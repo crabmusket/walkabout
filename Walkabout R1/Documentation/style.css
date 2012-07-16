@@ -5,8 +5,8 @@ html {
 }
 
 body {
-	width: 468pt;
-	padding: 72pt;
+	width: 640px;
+	padding: 36pt 0;
 	margin: 0px auto;
 	font-family: "Arial";
 }
@@ -23,7 +23,7 @@ img {
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 1em;
-	max-width: 468pt;
+	max-width: 640px;
 }
 
 img.inline {
@@ -56,12 +56,11 @@ p.title {
 }
 
 p.important {
-	position: relative;
-	left: 2em;
+	display: block;
+	margin: 1em auto;
 	width: 400pt;
 	padding: 5px;
 	background: #FFFFA0;
-	margin: 1em 0em;
 	text-indent: 0;
 }
 
