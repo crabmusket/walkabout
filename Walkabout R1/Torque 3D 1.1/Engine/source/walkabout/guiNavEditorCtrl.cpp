@@ -365,22 +365,16 @@ void GuiNavEditorCtrl::on3DMouseDown(const Gui3DMouseEvent & event)
       {
          if(gServerContainer.castRay(startPnt, endPnt, PlayerObjectType, &ri))
          {
-            mPlayer = dynamic_cast<AIPlayer*>(ri.object);
-            if(mPlayer)
+            if(dynamic_cast<AIPlayer*>(ri.object))
+            {
+               mPlayer = dynamic_cast<AIPlayer*>(ri.object);
                Con::executef(this, "onPlayerSelected", Con::getIntArg(mPlayer->mLinkTypes.getFlags()));
+            }
          }
          else if(!mPlayer.isNull() && gServerContainer.castRay(startPnt, endPnt, StaticObjectType, &ri))
             mPlayer->setPathDestination(ri.point);
       }
    }
-}
-
-void GuiNavEditorCtrl::on3DRightMouseDown(const Gui3DMouseEvent & event)
-{
-}
-
-void GuiNavEditorCtrl::on3DRightMouseUp(const Gui3DMouseEvent & event)
-{
 }
 
 void GuiNavEditorCtrl::on3DMouseUp(const Gui3DMouseEvent & event)

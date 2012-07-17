@@ -68,8 +68,6 @@ public:
    void on3DMouseDragged(const Gui3DMouseEvent & event);
    void on3DMouseEnter(const Gui3DMouseEvent & event);
    void on3DMouseLeave(const Gui3DMouseEvent & event);
-   void on3DRightMouseDown(const Gui3DMouseEvent & event);
-   void on3DRightMouseUp(const Gui3DMouseEvent & event);
    void updateGuiInfo();      
    void renderScene(const RectI & updateRect);
 
