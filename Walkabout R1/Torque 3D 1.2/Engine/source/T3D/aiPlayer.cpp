@@ -279,6 +279,8 @@ bool AIPlayer::getAIMove(Move *movePtr)
       {
          if((mPathData.path->mTo - mFollowData.object->getPosition()).len() > mFollowData.radius)
             setPathDestination(mFollowData.object->getPosition());
+         else if((getPosition() - mFollowData.object->getPosition()).len() < mFollowData.radius)
+            clearPath();
       }
    }
 
