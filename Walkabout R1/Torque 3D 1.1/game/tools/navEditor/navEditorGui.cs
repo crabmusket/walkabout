@@ -145,13 +145,12 @@ function NavEditorGui::buildLinks(%this)
 
 function updateLinkData(%control, %flags)
 {
-error(%flags);
-   %control->LinkWalkFlag.setVisible(true);
-   %control->LinkJumpFlag.setVisible(true);
-   %control->LinkDropFlag.setVisible(true);
-   %control->LinkLedgeFlag.setVisible(true);
-   %control->LinkClimbFlag.setVisible(true);
-   %control->LinkTeleportFlag.setVisible(true);
+   %control->LinkWalkFlag.setActive(true);
+   %control->LinkJumpFlag.setActive(true);
+   %control->LinkDropFlag.setActive(true);
+   %control->LinkLedgeFlag.setActive(true);
+   %control->LinkClimbFlag.setActive(true);
+   %control->LinkTeleportFlag.setActive(true);
 
    %control->LinkWalkFlag.setStateOn(%flags & $Nav::WalkFlag);
    %control->LinkJumpFlag.setStateOn(%flags & $Nav::JumpFlag);
@@ -173,12 +172,12 @@ function getLinkFlags(%control)
 
 function disableLinkData(%control)
 {
-   %control->LinkWalkFlag.setVisible(false);
-   %control->LinkJumpFlag.setVisible(false);
-   %control->LinkDropFlag.setVisible(false);
-   %control->LinkLedgeFlag.setVisible(false);
-   %control->LinkClimbFlag.setVisible(false);
-   %control->LinkTeleportFlag.setVisible(false);
+   %control->LinkWalkFlag.setActive(false);
+   %control->LinkJumpFlag.setActive(false);
+   %control->LinkDropFlag.setActive(false);
+   %control->LinkLedgeFlag.setActive(false);
+   %control->LinkClimbFlag.setActive(false);
+   %control->LinkTeleportFlag.setActive(false);
 }
 
 function NavEditorGui::onLinkSelected(%this, %flags)
@@ -244,6 +243,35 @@ function NavEditorGui::deleteCoverPoints(%this)
    {
       %this.getMesh().deleteCoverPoints();
       %this.isDirty = true;
+   }
+}
+
+function NavEditorGui::findCover(%this)
+{
+   if(%this.getMode() $= "TestMode" && isObject(%this.getPlayer()))
+   {
+      %pos = LocalClientConnection.getControlObject().getPosition();
+      %text = NavEditorOptionsWindow-->TestProperties->CoverPosition.getText();
+      if(%text !$= "")
+         %pos = eval(%text);
+      %this.getPlayer().findCover(%pos, NavEditorOptionsWindow-->TestProperties->CoverRadius.getText());
+   }
+}
+
+function NavEditorGui::followObject(%this)
+{
+   if(%this.getMode() $= "TestMode" && isObject(%this.getPlayer()))
+   {
+      %obj = LocalClientConnection.player;
+      %text = NavEditorOptionsWindow-->TestProperties->FollowObject.getText();
+      if(%text !$= "")
+      {
+         eval("%obj = " @ %text);
+         if(!isObject(%obj))
+            MessageBoxOk("Error", "Cannot find object" SPC %text);
+      }
+      if(isObject(%obj))
+         %this.getPlayer().followObject(%obj, NavEditorOptionsWindow-->TestProperties->FollowRadius.getText());
    }
 }
 

@@ -293,7 +293,7 @@
                buttonType = "PushButton";
                HorizSizing = "right";
                VertSizing = "bottom";
-               Extent = "90 18";
+               Extent = "180 18";
                text = "Spawn";
                command = "NavEditorGui.spawnPlayer();";
             };
@@ -305,6 +305,33 @@
                Extent = "90 18";
                text = "Delete";
                command = "NavEditorGui.getPlayer().delete();";
+            };
+            new GuiButtonCtrl() {
+               Profile = "GuiButtonProfile";
+               buttonType = "PushButton";
+               HorizSizing = "right";
+               VertSizing = "bottom";
+               Extent = "90 18";
+               text = "Find cover";
+               command = "NavEditorGui.findCover();";
+            };
+            new GuiButtonCtrl() {
+               Profile = "GuiButtonProfile";
+               buttonType = "PushButton";
+               HorizSizing = "right";
+               VertSizing = "bottom";
+               Extent = "90 18";
+               text = "Follow";
+               command = "NavEditorGui.followObject();";
+            };
+            new GuiButtonCtrl() {
+               Profile = "GuiButtonProfile";
+               buttonType = "PushButton";
+               HorizSizing = "right";
+               VertSizing = "bottom";
+               Extent = "90 18";
+               text = "Stop";
+               command = "NavEditorGui.getPlayer().stop();";
             };
          };
       };
@@ -399,8 +426,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "This link is just ordinary flat ground.";
                hovertime = "1000";
@@ -419,8 +446,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "Does this link require a jump?";
                hovertime = "1000";
@@ -439,8 +466,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "Does this link involve a significant drop?";
                hovertime = "1000";
@@ -459,8 +486,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "Should the character jump at the next ledge?";
                hovertime = "1000";
@@ -479,8 +506,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "Does this link involve climbing?";
                hovertime = "1000";
@@ -499,8 +526,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "Is this link a teleporter?";
                hovertime = "1000";
@@ -562,6 +589,67 @@
             extent = "186 64";
             padding = "2 2 2 2";
             
+			new GuiTextCtrl() {
+			   text = "Cover";
+               profile = "GuiTextProfile";
+               extent = "180 20";
+               minExtent = "8 2";
+               visible = "1";
+			};
+            new GuiTextEditCtrl() {
+               internalName = "CoverRadius";
+               text = "10";
+               profile = "GuiTextEditProfile";
+               extent = "40 20";
+               minExtent = "8 2";
+               visible = "1";
+               tooltipProfile = "GuiToolTipProfile";
+			   toolTip = "Radius for cover-finding.";
+            };
+			new GuiTextEditCtrl() {
+               internalName = "CoverPosition";
+               text = "LocalClientConnection.getControlObject().getPosition();";
+               profile = "GuiTextEditProfile";
+               extent = "140 20";
+               minExtent = "8 2";
+               visible = "1";
+               tooltipProfile = "GuiToolTipProfile";
+			   toolTip = "Position to find cover from.";
+			};
+			new GuiTextCtrl() {
+			   text = "Follow";
+               profile = "GuiTextProfile";
+               extent = "180 20";
+               minExtent = "8 2";
+               visible = "1";
+			};
+            new GuiTextEditCtrl() {
+               internalName = "FollowRadius";
+               text = "1";
+               profile = "GuiTextEditProfile";
+               extent = "40 20";
+               minExtent = "8 2";
+               visible = "1";
+               tooltipProfile = "GuiToolTipProfile";
+			   toolTip = "Radius for following.";
+            };
+			new GuiTextEditCtrl() {
+               internalName = "FollowObject";
+               text = "LocalClientConnection.player";
+               profile = "GuiTextEditProfile";
+               extent = "140 20";
+               minExtent = "8 2";
+               visible = "1";
+               tooltipProfile = "GuiToolTipProfile";
+			   toolTip = "Object to follow.";
+			};
+			new GuiTextCtrl() {
+			   text = "Movement";
+               profile = "GuiTextProfile";
+               extent = "180 20";
+               minExtent = "8 2";
+               visible = "1";
+			};
             new GuiCheckBoxCtrl() {
 			   internalName = "LinkWalkFlag";
 			   class = "NavMeshTestFlagButton";
@@ -573,8 +661,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "Can this character walk on ground?";
                hovertime = "1000";
@@ -593,8 +681,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "Can this character jump?";
                hovertime = "1000";
@@ -613,8 +701,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "Can this character drop over edges?";
                hovertime = "1000";
@@ -633,8 +721,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "Can this character jump from ledges?";
                hovertime = "1000";
@@ -653,8 +741,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "Can this character climb?";
                hovertime = "1000";
@@ -673,8 +761,8 @@
                horizSizing = "right";
                vertSizing = "bottom";
                profile = "GuiCheckBoxProfile";
-               visible = "0";
-               active = "1";
+               visible = "1";
+               active = "0";
                tooltipProfile = "GuiToolTipProfile";
 			   toolTip = "Can this character teleport?";
                hovertime = "1000";
