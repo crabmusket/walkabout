@@ -83,7 +83,7 @@ AIPlayer::AIPlayer()
 
    mJump = None;
    mNavSize = Regular;
-   mLinkTypes.walk = true;
+   mLinkTypes = Nav::LinkData(Nav::AllFlags);
 }
 
 /**
@@ -268,6 +268,19 @@ bool AIPlayer::getAIMove(Move *movePtr)
    Point3F rotation = getRotation();
 
    updateNavMesh();
+   if(!mFollowData.object.isNull())
+   {
+      if(mPathData.path.isNull())
+      {
+         if((getPosition() - mFollowData.object->getPosition()).len() > mFollowData.radius)
+            setPathDestination(mFollowData.object->getPosition());
+      }
+      else
+      {
+         if((mPathData.path->mTo - mFollowData.object->getPosition()).len() > mFollowData.radius)
+            setPathDestination(mFollowData.object->getPosition());
+      }
+   }
 
    // Orient towards the aim point, aim object, or towards
    // our destination.
@@ -693,8 +706,28 @@ DefineEngineMethod(AIPlayer, followNavPath, void, (SimObjectId obj),,
       object->followNavPath(path);
 }
 
-void AIPlayer::followObject(SceneObject *obj)
+void AIPlayer::followObject(SceneObject *obj, F32 radius)
 {
+   if(!isServerObject())
+      return;
+
+   if(setPathDestination(obj->getPosition()))
+   {
+      clearCover();
+      mFollowData.object = obj;
+      mFollowData.radius = radius;
+   }
+}
+
+DefineEngineMethod(AIPlayer, followObject, void, (SimObjectId obj, F32 radius),,
+   "@brief Tell the AIPlayer to follow another object.\n\n"
+
+   "@param obj ID of the object to follow.\n"
+   "@param radius Maximum distance we let the target escape to.")
+{
+   SceneObject *follow;
+   if(Sim::findObject(obj, follow))
+      object->followObject(follow, radius);
 }
 
 void AIPlayer::repath()

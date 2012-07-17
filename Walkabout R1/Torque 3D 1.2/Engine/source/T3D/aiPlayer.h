@@ -76,6 +76,9 @@ private:
    /// Clear out the current path.
    void clearPath();
 
+   /// Get the current path we're following.
+   Nav::NavPath *getPath() { return mPathData.path; }
+
    /// Stores information about our cover.
    struct CoverData {
       /// Pointer to a cover point.
@@ -91,6 +94,21 @@ private:
 
    /// Stop searching for cover.
    void clearCover();
+
+   /// Get cover we are moving to.
+   CoverPoint *getCover() { return mCoverData.cover; }
+
+   struct FollowData {
+      SimObjectPtr<SceneObject> object;
+      F32 radius;
+      FollowData() : object(NULL)
+      {
+         radius = 5.0f;
+      }
+   };
+
+   ///
+   FollowData mFollowData;
 
    /// NavMesh we pathfind on.
    SimObjectPtr<Nav::NavMesh> mNavMesh;
@@ -147,7 +165,7 @@ public:
    Point3F getPathDestination() const;
 
    void followNavPath(Nav::NavPath *path);
-   void followObject(SceneObject *obj);
+   void followObject(SceneObject *obj, F32 radius);
 
    void repath();
 
