@@ -9,6 +9,7 @@ body {
 	padding: 36pt 0;
 	margin: 0px auto;
 	font-family: "Arial";
+	font-size: 11pt;
 }
 
 /** Images **/
@@ -46,7 +47,6 @@ h3 {
 p {
 	margin: 5px;
 	text-indent: 1.5em;
-	font-size: 11pt;
 }
 
 p.title {
@@ -104,6 +104,11 @@ ol ol {
 
 ol ol ol {
 	list-style-type: none;/*lower-roman;*/
+}
+
+ol.eula {
+	list-style-type: lower-alpha;
+	padding-left: 60px;
 }
 
 /** Special 'tiles' list **/
