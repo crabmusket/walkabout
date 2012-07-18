@@ -72,6 +72,7 @@ p.caption {
 
 td {
 	vertical-align: top;
+	padding: 0 0.5em;
 }
 
 /** Code and path formatting **/
