@@ -1008,7 +1008,7 @@ $AISK_WALKABOUT_COVER_RADIUS = 20;
     if($AISK_WALKABOUT_ENABLE && %this.behavior.useWalkabout && isObject(%this.getNavMesh()))
         %this.setPathDestination(%node.getPosition());
     else
-	    //The 0 at the end sets if the bot should slow down or not, you can change it if needed
+        //The 0 at the end sets if the bot should slow down or not, you can change it if needed
         %obj.setMoveDestination(%node.getPosition(), 0);
 </pre>
 
