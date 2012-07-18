@@ -158,6 +158,7 @@ void AIPlayer::onRemove()
 {
    clearPath();
    clearCover();
+   clearFollow();
    Parent::onRemove();
 }
 
@@ -177,6 +178,9 @@ void AIPlayer::setMoveSpeed( F32 speed )
 void AIPlayer::stopMove()
 {
    mMoveState = ModeStop;
+   clearPath();
+   clearCover();
+   clearFollow();
 }
 
 /**
@@ -267,20 +271,27 @@ bool AIPlayer::getAIMove(Move *movePtr)
    Point3F location = eye.getPosition();
    Point3F rotation = getRotation();
 
-   updateNavMesh();
-   if(!mFollowData.object.isNull())
+   if(mDamageState == Enabled)
    {
-      if(mPathData.path.isNull())
+      if(mMoveState != ModeStop)
+         updateNavMesh();
+      if(!mFollowData.object.isNull())
       {
-         if((getPosition() - mFollowData.object->getPosition()).len() > mFollowData.radius)
-            setPathDestination(mFollowData.object->getPosition());
-      }
-      else
-      {
-         if((mPathData.path->mTo - mFollowData.object->getPosition()).len() > mFollowData.radius)
-            setPathDestination(mFollowData.object->getPosition());
-         else if((getPosition() - mFollowData.object->getPosition()).len() < mFollowData.radius)
-            clearPath();
+         if(mPathData.path.isNull())
+         {
+            if((getPosition() - mFollowData.object->getPosition()).len() > mFollowData.radius)
+               followObject(mFollowData.object, mFollowData.radius);
+         }
+         else
+         {
+            if((mPathData.path->mTo - mFollowData.object->getPosition()).len() > mFollowData.radius)
+               repath();
+            else if((getPosition() - mFollowData.object->getPosition()).len() < mFollowData.radius)
+            {
+               clearPath();
+               mMoveState = ModeStop;
+            }
+         }
       }
    }
 
@@ -562,8 +573,6 @@ void AIPlayer::clearPath()
       mPathData.path->deleteObject();
    // Reset path data.
    mPathData = PathData();
-   // Stop moving.
-   stopMove();
 }
 
 void AIPlayer::clearCover()
@@ -572,6 +581,11 @@ void AIPlayer::clearCover()
    if(!mCoverData.cover.isNull())
       mCoverData.cover->setOccupied(false);
    mCoverData = CoverData();
+}
+
+void AIPlayer::clearFollow()
+{
+   mFollowData = FollowData();
 }
 
 void AIPlayer::moveToNode(S32 node)
@@ -644,6 +658,7 @@ bool AIPlayer::setPathDestination(const Point3F &pos)
       // Clear any current path we might have.
       clearPath();
       clearCover();
+      clearFollow();
       // Store new path.
       mPathData.path = path;
       mPathData.owned = true;
@@ -701,6 +716,7 @@ void AIPlayer::followNavPath(Nav::NavPath *path)
    // Get rid of our current path.
    clearPath();
    clearCover();
+   clearFollow();
 
    // Follow new path.
    mPathData.path = path;
@@ -749,6 +765,9 @@ void AIPlayer::repath()
    if(mPathData.path.isNull() || !mPathData.owned)
       return;
 
+   // If we're following, get their position.
+   if(!mFollowData.object.isNull())
+      mPathData.path->mTo = mFollowData.object->getPosition();
    // Update from position and replan.
    mPathData.path->mFrom = getPosition();
    mPathData.path->plan();
@@ -821,6 +840,7 @@ bool AIPlayer::findCover(const Point3F &from, F32 radius)
    if(s.point)
    {
       clearCover();
+      clearFollow();
       mCoverData.cover = s.point;
       s.point->setOccupied(true);
       return setPathDestination(s.point->getPosition());

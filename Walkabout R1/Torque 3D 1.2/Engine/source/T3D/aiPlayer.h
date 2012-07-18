@@ -98,17 +98,24 @@ private:
    /// Get cover we are moving to.
    CoverPoint *getCover() { return mCoverData.cover; }
 
+   /// Information about a target we're following.
    struct FollowData {
+      /// Object to follow.
       SimObjectPtr<SceneObject> object;
+      /// Distance at whcih to follow.
       F32 radius;
+      /// Default constructor.
       FollowData() : object(NULL)
       {
          radius = 5.0f;
       }
    };
 
-   ///
+   /// Current object we're following.
    FollowData mFollowData;
+
+   /// Stop following me!
+   void clearFollow();
 
    /// NavMesh we pathfind on.
    SimObjectPtr<Nav::NavMesh> mNavMesh;
