@@ -268,9 +268,9 @@ bool TerrainBlock::buildPolyList(PolyListContext context, AbstractPolyList* poly
 	<p>Add:</p>
 
 <pre>
-#include "nav/navPath.h"
-#include "nav/navMesh.h"
-#include "nav/coverPoint.h"
+#include "walkabout/navPath.h"
+#include "walkabout/navMesh.h"
+#include "walkabout/coverPoint.h"
 </pre>
 
 	<p>After:</p>
@@ -283,23 +283,27 @@ bool TerrainBlock::buildPolyList(PolyListContext context, AbstractPolyList* poly
 	<p>Add:</p>
 
 <pre>
-   /// Should we jump next time we leave the ground?
-   bool mJump;
+   /// Should we jump?
+   enum JumpStates {
+      None,  ///< No, don't jump.
+      Now,   ///< Jump immediately.
+      Ledge, ///< Jump when we walk off a ledge.
+   } mJump;
 
    /// Stores information about a path.
    struct PathData {
-	  /// Pointer to path object.
-	  SimObjectPtr<Nav::NavPath> path;
-	  /// Do we own our path? If so, we will delete it when finished.
-	  bool owned;
-	  /// Path node we're at.
-	  U32 index;
-	  /// Default constructor.
-	  PathData() : path(NULL)
-	  {
-		 owned = false;
-		 index = 0;
-	  }
+      /// Pointer to path object.
+      SimObjectPtr<Nav::NavPath> path;
+      /// Do we own our path? If so, we will delete it when finished.
+      bool owned;
+      /// Path node we're at.
+      U32 index;
+      /// Default constructor.
+      PathData() : path(NULL)
+      {
+         owned = false;
+         index = 0;
+      }
    };
 
    /// Path we are currently following.
@@ -308,14 +312,17 @@ bool TerrainBlock::buildPolyList(PolyListContext context, AbstractPolyList* poly
    /// Clear out the current path.
    void clearPath();
 
+   /// Get the current path we're following.
+   Nav::NavPath *getPath() { return mPathData.path; }
+
    /// Stores information about our cover.
    struct CoverData {
-	  /// Pointer to a cover point.
-	  SimObjectPtr<CoverPoint> cover;
-	  /// Default constructor.
-	  CoverData() : cover(NULL)
-	  {
-	  }
+      /// Pointer to a cover point.
+      SimObjectPtr<CoverPoint> cover;
+      /// Default constructor.
+      CoverData() : cover(NULL)
+      {
+      }
    };
 
    /// Current cover we're trying to get to.
@@ -323,6 +330,28 @@ bool TerrainBlock::buildPolyList(PolyListContext context, AbstractPolyList* poly
 
    /// Stop searching for cover.
    void clearCover();
+
+   /// Get cover we are moving to.
+   CoverPoint *getCover() { return mCoverData.cover; }
+
+   /// Information about a target we're following.
+   struct FollowData {
+      /// Object to follow.
+      SimObjectPtr<SceneObject> object;
+      /// Distance at whcih to follow.
+      F32 radius;
+      /// Default constructor.
+      FollowData() : object(NULL)
+      {
+         radius = 5.0f;
+      }
+   };
+
+   /// Current object we're following.
+   FollowData mFollowData;
+
+   /// Stop following me!
+   void clearFollow();
 
    /// NavMesh we pathfind on.
    SimObjectPtr<Nav::NavMesh> mNavMesh;
@@ -338,6 +367,18 @@ protected:
 	<p>After:</p>
 
 <pre>
+   bool onAdd();
+</pre>
+
+	<p>Add:</p>
+
+<pre>
+   void onRemove();
+</pre>
+
+	<p>After:</p>
+
+<pre>
    void stopMove();
 </pre>
 
@@ -348,26 +389,29 @@ protected:
    /// @{
 
    enum NavSize {
-	  Small,
-	  Regular,
-	  Large
+      Small,
+      Regular,
+      Large
    } mNavSize;
    void setNavSize(NavSize size) { mNavSize = size; updateNavMesh(); }
    NavSize getNavSize() const { return mNavSize; }
 
-   void setPathDestination(const Point3F &pos);
+   bool setPathDestination(const Point3F &pos);
    Point3F getPathDestination() const;
 
    void followNavPath(Nav::NavPath *path);
-   void followObject(SceneObject *obj);
+   void followObject(SceneObject *obj, F32 radius);
 
    void repath();
 
-   void findCover(const Point3F &from, F32 radius);
+   bool findCover(const Point3F &from, F32 radius);
 
    Nav::NavMesh *findNavMesh() const;
    void updateNavMesh();
    Nav::NavMesh *getNavMesh() const { return mNavMesh; }
+
+   /// Types of link we can use.
+   Nav::LinkData mLinkTypes;
 
    /// @}
 </pre>
@@ -381,8 +425,75 @@ protected:
 	<p>Add:</p>
 
 <pre>
-   mJump = false;
+   mJump = None;
    mNavSize = Regular;
+   mLinkTypes = Nav::LinkData(Nav::AllFlags);
+</pre>
+
+	<p>After:</p>
+
+<pre>
+   endGroup( "AI" );
+</pre>
+
+	<p>Add:</p>
+
+<pre>
+   addGroup("Pathfinding");
+
+   addField("allowWalk", TypeBool, Offset(mLinkTypes.walk, AIPlayer),
+      "Allow the character to walk on dry land.");
+   addField("allowJump", TypeBool, Offset(mLinkTypes.jump, AIPlayer),
+      "Allow the character to use jump links.");
+   addField("allowDrop", TypeBool, Offset(mLinkTypes.drop, AIPlayer),
+      "Allow the character to use drop links.");
+   addField("allowSwim", TypeBool, Offset(mLinkTypes.swim, AIPlayer),
+      "Allow the character tomove in water.");
+   addField("allowLedge", TypeBool, Offset(mLinkTypes.ledge, AIPlayer),
+      "Allow the character to jump ledges.");
+   addField("allowClimb", TypeBool, Offset(mLinkTypes.climb, AIPlayer),
+      "Allow the character to use climb links.");
+   addField("allowTeleport", TypeBool, Offset(mLinkTypes.teleport, AIPlayer),
+      "Allow the character to use teleporters.");
+
+   endGroup("Pathfinding");
+</pre>
+
+	<p>After:</p>
+
+<pre>
+bool AIPlayer::onAdd()
+{
+   ...
+}
+</pre>
+
+	<p>Add:</p>
+
+<pre>
+void AIPlayer::onRemove() 
+{
+   clearPath();
+   clearCover();
+   clearFollow();
+   Parent::onRemove();
+}
+</pre>
+
+	<p>After:</p>
+
+<pre>
+void AIPlayer::stopMove()
+{
+   mMoveState = ModeStop;
+</pre>
+
+	<p>Add:</p>
+
+<pre>
+   clearPath();
+   clearCover();
+   clearFollow();
 </pre>
 
 	<p>After:</p>
@@ -395,7 +506,29 @@ protected:
 	<p>Add:</p>
 
 <pre>
-   updateNavMesh();
+   if(mDamageState == Enabled)
+   {
+      if(mMoveState != ModeStop)
+         updateNavMesh();
+      if(!mFollowData.object.isNull())
+      {
+         if(mPathData.path.isNull())
+         {
+            if((getPosition() - mFollowData.object->getPosition()).len() > mFollowData.radius)
+               followObject(mFollowData.object, mFollowData.radius);
+         }
+         else
+         {
+            if((mPathData.path->mTo - mFollowData.object->getPosition()).len() > mFollowData.radius)
+               repath();
+            else if((getPosition() - mFollowData.object->getPosition()).len() < mFollowData.radius)
+            {
+               clearPath();
+               mMoveState = ModeStop;
+            }
+         }
+      }
+   }
 </pre>
 
 	<p>Replace this:</p>
@@ -436,15 +569,20 @@ protected:
 	<p>Add:</p>
 
 <pre>
-   if(mJump)
+   if(mJump == Now)
    {
-	  // If we're not touching the ground, jump!
-	  RayInfo info;
-	  if(!getContainer()->castRay(getPosition(), getPosition() - Point3F(0, 0, 0.4f), StaticShapeObjectType, &info))
-	  {
-		 movePtr->trigger[2] = true;
-		 mJump = false;
-	  }
+      movePtr->trigger[2] = true;
+      mJump = None;
+   }
+   else if(mJump == Ledge)
+   {
+      // If we're not touching the ground, jump!
+      RayInfo info;
+      if(!getContainer()->castRay(getPosition(), getPosition() - Point3F(0, 0, 0.4f), StaticShapeObjectType, &info))
+      {
+         movePtr->trigger[2] = true;
+         mJump = None;
+      }
    }
 </pre>
 
@@ -469,23 +607,28 @@ void AIPlayer::onReachDestination()
 {
    if(!mPathData.path.isNull())
    {
-	  if(mPathData.index == mPathData.path->size() - 1)
-	  {
-		 // Handle looping paths.
-		 if(mPathData.path->mIsLooping)
-			moveToNode(0);
-		 // Otherwise end path.
-		 else
-		 {
-			clearPath();
-			throwCallback("onReachDestination");
-		 }
-	  }
-	  else
-		 moveToNode(mPathData.index + 1);
+      if(mPathData.index == mPathData.path->size() - 1)
+      {
+         // Handle looping paths.
+         if(mPathData.path->mIsLooping)
+            moveToNode(0);
+         // Otherwise end path.
+         else
+         {
+            clearPath();
+            throwCallback("onReachDestination");
+         }
+      }
+      else
+      {
+         moveToNode(mPathData.index + 1);
+         // Throw callback every time if we're on a looping path.
+         //if(mPathData.path->mIsLooping)
+            //throwCallback("onReachDestination");
+      }
    }
    else
-	  throwCallback("onReachDestination");
+      throwCallback("onReachDestination");
 }
 
 /**
@@ -495,9 +638,9 @@ void AIPlayer::onReachDestination()
 void AIPlayer::onStuck()
 {
    if(!mPathData.path.isNull())
-	  repath();
+      repath();
    else
-	  throwCallback("onMoveStuck");
+      throwCallback("onMoveStuck");
 }
 
 // --------------------------------------------------------------------------------------------
@@ -508,29 +651,32 @@ void AIPlayer::clearPath()
 {
    // Only delete if we own the path.
    if(!mPathData.path.isNull() && mPathData.owned)
-	  mPathData.path->deleteObject();
+      mPathData.path->deleteObject();
    // Reset path data.
    mPathData = PathData();
-   // Stop moving.
-   stopMove();
 }
 
 void AIPlayer::clearCover()
 {
    // Notify cover that we are no longer on our way.
    if(!mCoverData.cover.isNull())
-	  mCoverData.cover->setOccupied(false);
+      mCoverData.cover->setOccupied(false);
    mCoverData = CoverData();
+}
+
+void AIPlayer::clearFollow()
+{
+   mFollowData = FollowData();
 }
 
 void AIPlayer::moveToNode(S32 node)
 {
    if(mPathData.path.isNull())
-	  return;
+      return;
 
    // -1 is shorthand for 'last path node'.
    if(node == -1)
-	  node = mPathData.path->size() - 1;
+      node = mPathData.path->size() - 1;
 
    // Consider slowing down on the last path node.
    setMoveDestination(mPathData.path->getNode(node), false);
@@ -538,94 +684,101 @@ void AIPlayer::moveToNode(S32 node)
    // Check flags for this segment.
    if(mPathData.index)
    {
-	  U8 flags = mPathData.path->getFlags(node - 1);
-	  if(flags & Nav::JumpFlag)
-		 // Jump if we must.
-		 mJump = true;
-	  else
-		 // Catch pathing errors.
-		 mJump = false;
+      U16 flags = mPathData.path->getFlags(node - 1);
+      // Jump if we must.
+      if(flags & Nav::LedgeFlag)
+         mJump = Ledge;
+      else if(flags & Nav::JumpFlag)
+         mJump = Now;
+      else
+         // Catch pathing errors.
+         mJump = None;
    }
 
    // Store current index.
    mPathData.index = node;
 }
 
-void AIPlayer::setPathDestination(const Point3F &pos)
+bool AIPlayer::setPathDestination(const Point3F &pos)
 {
    // Pathfinding only happens on the server.
    if(!isServerObject())
-	  return;
+      return false;
 
    if(!getNavMesh())
-	  updateNavMesh();
+      updateNavMesh();
    // If we can't find a mesh, just move regularly.
-   //if(!getNavMesh())
-   //{
-   //   setMoveDestination(pos);
-   //   return;
-   //}
+   if(!getNavMesh())
+   {
+      //setMoveDestination(pos);
+      return false;
+   }
 
    // Create a new path.
    Nav::NavPath *path = new Nav::NavPath();
    if(path)
    {
-	  path->mMesh = getNavMesh();
-	  path->mFrom = getPosition();
-	  path->mTo = pos;
-	  path->mFromSet = path->mToSet = true;
-	  path->mAlwaysRender = true;
-	  // Paths plan automatically upon being registered.
-	  if(!path->registerObject())
-	  {
-		 delete path;
-		 return;
-	  }
+      path->mMesh = getNavMesh();
+      path->mFrom = getPosition();
+      path->mTo = pos;
+      path->mFromSet = path->mToSet = true;
+      path->mAlwaysRender = true;
+      path->mLinkTypes = mLinkTypes;
+      // Paths plan automatically upon being registered.
+      if(!path->registerObject())
+      {
+         delete path;
+         return false;
+      }
    }
    else
-	  return;
+      return false;
 
    if(path->success())
    {
-	  // Clear any current path we might have.
-	  clearPath();
-	  clearCover();
-	  // Store new path.
-	  mPathData.path = path;
-	  mPathData.owned = true;
-	  // Skip node 0, which we are currently standing on.
-	  moveToNode(1);
+      // Clear any current path we might have.
+      clearPath();
+      clearCover();
+      clearFollow();
+      // Store new path.
+      mPathData.path = path;
+      mPathData.owned = true;
+      // Skip node 0, which we are currently standing on.
+      moveToNode(1);
+      return true;
    }
    else
    {
-	  // Just move normally if we can't path.
-	  //setMoveDestination(pos, true);
-	  //return;
-	  path->deleteObject();
+      // Just move normally if we can't path.
+      //setMoveDestination(pos, true);
+      //return;
+      //throwCallback("onPathFailed");
+      path->deleteObject();
+      return false;
    }
 }
 
-DefineEngineMethod(AIPlayer, setPathDestination, void, (Point3F goal),,
+DefineEngineMethod(AIPlayer, setPathDestination, bool, (Point3F goal),,
    "@brief Tells the AI to find a path to the location provided\n\n"
 
-   "@param goal Coordinates in world space representing location to move to.\n\n"
+   "@param goal Coordinates in world space representing location to move to.\n"
+   "@return True if a path was found.\n\n"
 
    "@see getPathDestination()\n"
    "@see setMoveDestination()\n")
 {
-   object->setPathDestination(goal);
+   return object->setPathDestination(goal);
 }
 
 Point3F AIPlayer::getPathDestination() const
 {
    if(!mPathData.path.isNull())
-	  return mPathData.path->mTo;
+      return mPathData.path->mTo;
    return Point3F(0, 0, 0);
 }
 
 DefineEngineMethod(AIPlayer, getPathDestination, Point3F, (),,
    "@brief Get the AIPlayer's current pathfinding destination.\n\n"
-
 
    "@return Returns a point containing the \"x y z\" position "
    "of the AIPlayer's current path destination. If no path destination "
@@ -633,17 +786,18 @@ DefineEngineMethod(AIPlayer, getPathDestination, Point3F, (),,
 
    "@see setPathDestination()\n")
 {
-		return object->getPathDestination();
+	return object->getPathDestination();
 }
 
 void AIPlayer::followNavPath(Nav::NavPath *path)
 {
    if(!isServerObject())
-	  return;
+      return;
 
    // Get rid of our current path.
    clearPath();
    clearCover();
+   clearFollow();
 
    // Follow new path.
    mPathData.path = path;
@@ -659,19 +813,42 @@ DefineEngineMethod(AIPlayer, followNavPath, void, (SimObjectId obj),,
 {
    Nav::NavPath *path;
    if(Sim::findObject(obj, path))
-	  object->followNavPath(path);
+      object->followNavPath(path);
 }
 
-void AIPlayer::followObject(SceneObject *obj)
+void AIPlayer::followObject(SceneObject *obj, F32 radius)
 {
+   if(!isServerObject())
+      return;
+
+   if(setPathDestination(obj->getPosition()))
+   {
+      clearCover();
+      mFollowData.object = obj;
+      mFollowData.radius = radius;
+   }
+}
+
+DefineEngineMethod(AIPlayer, followObject, void, (SimObjectId obj, F32 radius),,
+   "@brief Tell the AIPlayer to follow another object.\n\n"
+
+   "@param obj ID of the object to follow.\n"
+   "@param radius Maximum distance we let the target escape to.")
+{
+   SceneObject *follow;
+   if(Sim::findObject(obj, follow))
+      object->followObject(follow, radius);
 }
 
 void AIPlayer::repath()
 {
    // Ineffectual if we don't have a path, or are using someone else's.
    if(mPathData.path.isNull() || !mPathData.owned)
-	  return;
+      return;
 
+   // If we're following, get their position.
+   if(!mFollowData.object.isNull())
+      mPathData.path->mTo = mFollowData.object->getPosition();
    // Update from position and replan.
    mPathData.path->mFrom = getPosition();
    mPathData.path->plan();
@@ -695,9 +872,9 @@ struct CoverSearch
    CoverPoint *point;
    CoverSearch() : loc(0, 0, 0), from(0, 0, 0)
    {
-	  best = -FLT_MAX;
-	  point = NULL;
-	  dist = FLT_MAX;
+      best = -FLT_MAX;
+      point = NULL;
+      dist = FLT_MAX;
    }
 };
 
@@ -705,7 +882,7 @@ static void findCoverCallback(SceneObject *obj, void *key)
 {
    CoverPoint *p = dynamic_cast<CoverPoint*>(obj);
    if(!p || p->isOccupied())
-	  return;
+      return;
    CoverSearch *s = static_cast<CoverSearch*>(key);
    Point3F dir = s->from - p->getPosition();
    dir.normalizeSafe();
@@ -718,15 +895,15 @@ static void findCoverCallback(SceneObject *obj, void *key)
    score *= p->getQuality();
    if(score > s->best)
    {
-	  s->best = score;
-	  s->point = p;
+      s->best = score;
+      s->point = p;
    }
 }
 
-void AIPlayer::findCover(const Point3F &from, F32 radius)
+bool AIPlayer::findCover(const Point3F &from, F32 radius)
 {
    if(radius <= 0)
-	  return;
+      return false;
 
    // Create a search state.
    CoverSearch s;
@@ -743,20 +920,23 @@ void AIPlayer::findCover(const Point3F &from, F32 radius)
    // Go to cover!
    if(s.point)
    {
-	  setPathDestination(s.point->getPosition());
-	  clearCover();
-	  mCoverData.cover = s.point;
-	  s.point->setOccupied(true);
+      clearCover();
+      clearFollow();
+      mCoverData.cover = s.point;
+      s.point->setOccupied(true);
+      return setPathDestination(s.point->getPosition());
    }
+   return false;
 }
 
-DefineEngineMethod(AIPlayer, findCover, void, (Point3F from, F32 radius),,
+DefineEngineMethod(AIPlayer, findCover, bool, (Point3F from, F32 radius),,
    "@brief Tells the AI to find cover nearby.\n\n"
 
    "@param from   Location to find cover from (i.e., enemy position).\n"
-   "@param radius Distance to search for cover.\n\n")
+   "@param radius Distance to search for cover.\n"
+   "@return True if cover was found.\n\n")
 {
-   object->findCover(from, radius);
+   return object->findCover(from, radius);
 }
 
 Nav::NavMesh *AIPlayer::findNavMesh() const
@@ -767,25 +947,25 @@ Nav::NavMesh *AIPlayer::findNavMesh() const
    SimSet *set = Nav::NavMesh::getServerSet();
    for(U32 i = 0; i < set->size(); i++)
    {
-	  Nav::NavMesh *m = static_cast<Nav::NavMesh*>(set->at(i));
-	  if(m->getWorldBox().isContained(getWorldBox()))
-	  {
-		 // Check that mesh size is appropriate.
-		 if(mMount.object) // Should use isMounted() but it's not const. Grr.
-		 {
-			if(!m->mVehicles)
-			   continue;
-		 }
-		 else
-		 {
-			if(getNavSize() == Small && !m->mSmallCharacters ||
-			   getNavSize() == Regular && !m->mRegularCharacters ||
-			   getNavSize() == Large && !m->mLargeCharacters)
-			   continue;
-		 }
-		 if(!mesh || m->getWorldBox().getVolume() < mesh->getWorldBox().getVolume())
-			mesh = m;
-	  }
+      Nav::NavMesh *m = static_cast<Nav::NavMesh*>(set->at(i));
+      if(m->getWorldBox().isContained(getWorldBox()))
+      {
+         // Check that mesh size is appropriate.
+         if(mMount.object) // Should use isMounted() but it's not const. Grr.
+         {
+            if(!m->mVehicles)
+               continue;
+         }
+         else
+         {
+            if(getNavSize() == Small && !m->mSmallCharacters ||
+               getNavSize() == Regular && !m->mRegularCharacters ||
+               getNavSize() == Large && !m->mLargeCharacters)
+               continue;
+         }
+         if(!mesh || m->getWorldBox().getVolume() < mesh->getWorldBox().getVolume())
+            mesh = m;
+      }
    }
    return mesh;
 }
@@ -806,16 +986,16 @@ void AIPlayer::updateNavMesh()
 {
    Nav::NavMesh *old = mNavMesh;
    if(mNavMesh.isNull())
-	  mNavMesh = findNavMesh();
+      mNavMesh = findNavMesh();
    else
    {
-	  if(!mNavMesh->getWorldBox().isContained(getWorldBox()))
-		 mNavMesh = findNavMesh();
+      if(!mNavMesh->getWorldBox().isContained(getWorldBox()))
+         mNavMesh = findNavMesh();
    }
    // See if we need to update our path.
    if(mNavMesh != old && !mPathData.path.isNull())
    {
-	  setPathDestination(mPathData.path->mTo);
+      setPathDestination(mPathData.path->mTo);
    }
 }
 
@@ -830,13 +1010,13 @@ DefineEngineMethod(AIPlayer, setNavSize, void, (const char *size),,
    "@brief Set the size of NavMesh this character uses. One of \"Small\", \"Regular\" or \"Large\".")
 {
    if(!dStrcmp(size, "Small"))
-	  object->setNavSize(AIPlayer::Small);
+      object->setNavSize(AIPlayer::Small);
    else if(!dStrcmp(size, "Regular"))
-	  object->setNavSize(AIPlayer::Regular);
+      object->setNavSize(AIPlayer::Regular);
    else if(!dStrcmp(size, "Large"))
-	  object->setNavSize(AIPlayer::Large);
+      object->setNavSize(AIPlayer::Large);
    else
-	  Con::errorf("AIPlayer::setNavSize: no such size '%s'.", size);
+      Con::errorf("AIPlayer::setNavSize: no such size '%s'.", size);
 }
 
 DefineEngineMethod(AIPlayer, getNavSize, const char*, (),,
@@ -845,11 +1025,11 @@ DefineEngineMethod(AIPlayer, getNavSize, const char*, (),,
    switch(object->getNavSize())
    {
    case AIPlayer::Small:
-	  return "Small";
+      return "Small";
    case AIPlayer::Regular:
-	  return "Regular";
+      return "Regular";
    case AIPlayer::Large:
-	  return "Large";
+      return "Large";
    }
    return "";
 }
@@ -917,7 +1097,7 @@ static void CheckVertexBounds()
 	This will create a new Visual Studio solution for your project, so if you’ve made changes to it, you’ll need to redo them.</p>
 
 	<h1 id="UAISK">UAISK integration</h1>
-	
+
 	<p><strong>Walkabout</strong> is a navigation solution, but chances are you want your characters to do more than go where you tell them without running into stuff!
 	The <a href="http://www.garagegames.com/products/ai-starter-kit">Universal AI Starter Kit</a> is one of the premier addons providing AI for Torque 3D.
 	This section will describe how to modify the UAISK to make full use of <strong>Walkabout</strong>'s navmeshes.</p>
