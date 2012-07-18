@@ -950,9 +950,9 @@ $AISK_WALKABOUT_COVER_RADIUS = 20;
 	<p>With:</p>
 
 <pre>
-    if($AISK_WALKABOUT_ENABLE && %obj.behavior.useWalkabout && isObject(%obj.getNavMesh()))
+    if($AISK_WALKABOUT_ENABLE && %this.behavior.useWalkabout && isObject(%this.getNavMesh()))
         // Use Walkabout pathfinding.
-        %obj.setPathDestination(%this.moveDestinationB);
+        %this.setPathDestination(%this.moveDestinationB);
     //Do a simple test to see if the bot can go directly to its target destination,
     //or if it needs to do something fancy to go around an obstacle
     else if (%this.checkMovementLos(%obj, %eyeTrans, %this.moveDestinationB) == 0)
@@ -978,17 +978,43 @@ $AISK_WALKABOUT_COVER_RADIUS = 20;
         //Move a little when hit, aggressive bots move in the "Defending" state
         if (!%obj.behavior.isAggressive)
         {
-            if($AISK_WALKABOUT_ENABLE && %obj.behavior.useWalkabout && %obj.behavior.useCover && isObject(%obj.getNavMesh()))
+            if($AISK_WALKABOUT_ENABLE && %this.behavior.useWalkabout && %this.behavior.useCover && isObject(%this.getNavMesh()))
             {
                 // Try to take cover. If that fails, just sidestep!
-                if(!%obj.findCover(%sourceObject.getPosition(), $AISK_WALKABOUT_COVER_RADIUS))
-                    %obj.sidestep(%obj, true);
+                if(!%this.findCover(%sourceObject.getPosition(), $AISK_WALKABOUT_COVER_RADIUS))
+                    %this.sidestep(%this, true);
             }
             else
                 %obj.sidestep(%obj, true);
         }
 </pre>
 
+	<p>Next, we'll modify bots' pathed movement.
+	We're going to make bots find a <strong>Walkabout</strong> path between each UAISK path node they travel through.
+	This will allow you to use paths as 'waypoints', instead of having to place a path node at every corner.
+	For example, you could put one path node inside a building, the next up a hill, and the final one on a bridge, and bots will find proper paths between these points.
+	If your level geometry changes or you decide to move your path nodes around, the bots will still find correct paths!</p>
+
+	<p>In <span class="path">game/scripts/server/UAISK/aiPathed.cs</span>, replace this:</p>
+
+<pre>
+    //The 0 at the end sets if the bot should slow down or not, you can change it if needed
+    %obj.setMoveDestination(%node.getPosition(), 0);
+</pre>
+
+	<p>With:</p>
+
+<pre>
+    if($AISK_WALKABOUT_ENABLE && %this.behavior.useWalkabout && isObject(%this.getNavMesh()))
+        %this.setPathDestination(%node.getPosition());
+    else
+	    //The 0 at the end sets if the bot should slow down or not, you can change it if needed
+        %obj.setMoveDestination(%node.getPosition(), 0);
+</pre>
+
+	<p>Finally, we need to set the useWalkabout and useCover properties on behaviours that you want to use pathfinding.
+	The behaviours are in <span class="path">game/scripts/server/UAISK/aiBehavoirs.cs</span>.
+	I recommend setting useWalkabout to true for the Chase behaviour, and useWalkabout and useCover to true for the KillableNPC behaviour.</p>
 	<p>All done! Now, if you start up your game using the UAISK, you should see your characters using navmeshes and taking cover.</p>
 
 </body>
