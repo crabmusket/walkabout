@@ -537,7 +537,7 @@ namespace Nav {
       return Point3F(0,0,0);
    }
 
-   U8 NavPath::getFlags(S32 idx) const
+   U16 NavPath::getFlags(S32 idx) const
    {
       if(idx < size() && idx >= 0)
          return mFlags[idx];
@@ -738,7 +738,7 @@ namespace Nav {
       return object->getNode(idx);
    }
 
-   DefineEngineMethod(NavPath, getFlags, U8, (S32 idx),,
+   DefineEngineMethod(NavPath, getFlags, U16, (S32 idx),,
       "@brief Get a specified node along the path.")
    {
       return object->getFlags(idx);

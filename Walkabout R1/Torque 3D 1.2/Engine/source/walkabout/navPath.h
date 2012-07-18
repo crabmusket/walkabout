@@ -98,7 +98,7 @@ namespace Nav {
       Point3F getNode(S32 idx) const;
 
       /// Get the flags for a given path node.
-      U8 getFlags(S32 idx) const;
+      U16 getFlags(S32 idx) const;
 
       /// @}
 
