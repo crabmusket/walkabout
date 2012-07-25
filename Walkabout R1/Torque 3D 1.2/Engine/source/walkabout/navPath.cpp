@@ -738,10 +738,10 @@ namespace Nav {
       return object->getNode(idx);
    }
 
-   DefineEngineMethod(NavPath, getFlags, U16, (S32 idx),,
+   DefineEngineMethod(NavPath, getFlags, S32, (S32 idx),,
       "@brief Get a specified node along the path.")
    {
-      return object->getFlags(idx);
+      return (S32)object->getFlags(idx);
    }
 
    DefineEngineMethod(NavPath, getLength, F32, (),,
