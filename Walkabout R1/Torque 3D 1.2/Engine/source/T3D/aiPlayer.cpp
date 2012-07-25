@@ -84,6 +84,8 @@ AIPlayer::AIPlayer()
    mJump = None;
    mNavSize = Regular;
    mLinkTypes = Nav::LinkData(Nav::AllFlags);
+
+   mIsAiControlled = true;
 }
 
 /**
