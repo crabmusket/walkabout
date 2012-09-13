@@ -33,6 +33,12 @@ img.inline {
 	padding: 0;
 }
 
+/** Links **/
+
+a {
+	text-decoration: none;
+}
+
 /** Headings and paragraphs **/
 
 h1 {
