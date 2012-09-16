@@ -168,24 +168,3 @@ ul.tiles li a p {
 	color: black;
 	text-indent: 0px;
 }
-
-/** Special 'gallery' list. **/
-
-ul.gallery {
-	list-style-type: none;
-	width: 600px;
-	padding: 0;
-	margin-left: 40px;
-}
-
-ul.gallery li {
-	display: inline-block;
-	/*width: 150px;
-	height: 116px;*/
-	margin: 10px 20px;
-}
-
-ul.gallery li a img {
-	padding: 0;
-	margin: 0;
-}
