@@ -103,6 +103,10 @@ pre {
 
 /** Lists **/
 
+li {
+	margin: 4px 0;
+}
+
 ol.toc li {
 	margin: 0px;
 }
