@@ -81,9 +81,11 @@ AIPlayer::AIPlayer()
    mTargetInLOS = false;
    mAimOffset = Point3F(0.0f, 0.0f, 0.0f);
 
+#ifdef TORQUE_WALKABOUT_ENABLED
    mJump = None;
    mNavSize = Regular;
    mLinkTypes = Nav::LinkData(Nav::AllFlags);
+#endif // TORQUE_WALKABOUT_ENABLED
 
    mIsAiControlled = true;
 }
@@ -121,6 +123,7 @@ void AIPlayer::initPersistFields()
 
    endGroup( "AI" );
 
+#ifdef TORQUE_WALKABOUT_ENABLED
    addGroup("Pathfinding");
 
    addField("allowWalk", TypeBool, Offset(mLinkTypes.walk, AIPlayer),
@@ -139,6 +142,7 @@ void AIPlayer::initPersistFields()
       "Allow the character to use teleporters.");
 
    endGroup("Pathfinding");
+#endif // TORQUE_WALKABOUT_ENABLED
 
    Parent::initPersistFields();
 }
@@ -156,6 +160,7 @@ bool AIPlayer::onAdd()
    return true;
 }
 
+#ifdef TORQUE_WALKABOUT_ENABLED
 void AIPlayer::onRemove() 
 {
    clearPath();
@@ -163,6 +168,7 @@ void AIPlayer::onRemove()
    clearFollow();
    Parent::onRemove();
 }
+#endif // TORQUE_WALKABOUT_ENABLED
 
 /**
  * Sets the speed at which this AI moves
@@ -180,9 +186,11 @@ void AIPlayer::setMoveSpeed( F32 speed )
 void AIPlayer::stopMove()
 {
    mMoveState = ModeStop;
+#ifdef TORQUE_WALKABOUT_ENABLED
    clearPath();
    clearCover();
    clearFollow();
+#endif // TORQUE_WALKABOUT_ENABLED
 }
 
 /**
@@ -273,6 +281,7 @@ bool AIPlayer::getAIMove(Move *movePtr)
    Point3F location = eye.getPosition();
    Point3F rotation = getRotation();
 
+#ifdef TORQUE_WALKABOUT_ENABLED
    if(mDamageState == Enabled)
    {
       if(mMoveState != ModeStop)
@@ -296,6 +305,7 @@ bool AIPlayer::getAIMove(Move *movePtr)
          }
       }
    }
+#endif // TORQUE_WALKABOUT_ENABLED
 
    // Orient towards the aim point, aim object, or towards
    // our destination.
@@ -379,7 +389,11 @@ bool AIPlayer::getAIMove(Move *movePtr)
       if (mFabs(xDiff) < mMoveTolerance && mFabs(yDiff) < mMoveTolerance) 
       {
          mMoveState = ModeStop;
+#ifdef TORQUE_WALKABOUT_ENABLED
          onReachDestination();
+#else
+         throwCallback("onReachDestination");
+#endif // TORQUE_WALKABOUT_ENABLED
       }
       else 
       {
@@ -448,7 +462,11 @@ bool AIPlayer::getAIMove(Move *movePtr)
                if ( mMoveState != ModeSlowing || locationDelta == 0 )
                {
                   mMoveState = ModeStuck;
+#ifdef TORQUE_WALKABOUT_ENABLED
                   onStuck();
+#else
+                  throwCallback("onMoveStuck");
+#endif // TORQUE_WALKABOUT_ENABLED
                }
             }
          }
@@ -487,6 +505,7 @@ bool AIPlayer::getAIMove(Move *movePtr)
    for( int i = 0; i < MaxTriggerKeys; i++ )
       movePtr->trigger[i] = getImageTriggerState(i);
 
+#ifdef TORQUE_WALKABOUT_ENABLED
    if(mJump == Now)
    {
       movePtr->trigger[2] = true;
@@ -502,6 +521,7 @@ bool AIPlayer::getAIMove(Move *movePtr)
          mJump = None;
       }
    }
+#endif // TORQUE_WALKABOUT_ENABLED
 
    mLastLocation = location;
 
@@ -519,6 +539,7 @@ void AIPlayer::throwCallback( const char *name )
    Con::executef(getDataBlock(), name, getIdString());
 }
 
+#ifdef TORQUE_WALKABOUT_ENABLED
 /**
  * Called when we get within mMoveTolerance of our destination set using
  * setMoveDestination(). Only fires the script callback if we are at the end
@@ -954,6 +975,7 @@ DefineEngineMethod(AIPlayer, getNavSize, const char*, (),,
    }
    return "";
 }
+#endif // TORQUE_WALKABOUT_ENABLED
 
 // --------------------------------------------------------------------------------------------
 // Console Functions

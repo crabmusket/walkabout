@@ -10,9 +10,11 @@
 #include "T3D/player.h"
 #endif
 
+#ifdef TORQUE_WALKABOUT_ENABLED
 #include "walkabout/navPath.h"
 #include "walkabout/navMesh.h"
 #include "walkabout/coverPoint.h"
+#endif // TORQUE_WALKABOUT_ENABLED
 
 class AIPlayer : public Player {
 
@@ -47,6 +49,7 @@ private:
    // Utility Methods
    void throwCallback( const char *name );
 
+#ifdef TORQUE_WALKABOUT_ENABLED
    /// Should we jump?
    enum JumpStates {
       None,  ///< No, don't jump.
@@ -126,6 +129,7 @@ private:
 protected:
    virtual void onReachDestination();
    virtual void onStuck();
+#endif // TORQUE_WALKABOUT_ENABLED
 
 public:
    DECLARE_CONOBJECT( AIPlayer );
@@ -136,7 +140,9 @@ public:
    static void initPersistFields();
 
    bool onAdd();
+#ifdef TORQUE_WALKABOUT_ENABLED
    void onRemove();
+#endif // TORQUE_WALKABOUT_ENABLED
 
    virtual bool getAIMove( Move *move );
 
@@ -157,6 +163,7 @@ public:
    Point3F getMoveDestination() const { return mMoveDestination; }
    void stopMove();
 
+#ifdef TORQUE_WALKABOUT_ENABLED
    /// @name Pathfinding
    /// @{
 
@@ -186,6 +193,7 @@ public:
    Nav::LinkData mLinkTypes;
 
    /// @}
+#endif // TORQUE_WALKABOUT_ENABLED
 };
 
 #endif

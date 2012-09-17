@@ -1,3 +1,4 @@
+#ifdef TORQUE_WALKABOUT_EXTRAS_ENABLED
 //
 // ObjPolyList class for T3D 1.1
 // Copyright (c) Daniel Buckmaster 2012
@@ -85,3 +86,5 @@ private:
 };
 
 #endif
+
+#endif // TORQUE_WALKABOUT_EXTRAS_ENABLED

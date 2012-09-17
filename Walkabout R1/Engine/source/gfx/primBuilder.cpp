@@ -6,7 +6,6 @@
 #include "gfxDevice.h"
 #include "console/console.h"
 
-
 //*****************************************************************************
 // Primitive Builder
 //*****************************************************************************
@@ -20,6 +19,7 @@ ColorI            mCurColor( 255, 255, 255 );
 Point2F           mCurTexCoord;
 const ColorI      _colWhite( 255, 255, 255, 255 );
 
+#ifdef TORQUE_WALKABOUT_ENABLED
 U32 mMaxVerts;
 
 static void CheckVertexBounds()
@@ -49,6 +49,27 @@ static void CheckVertexBounds()
 #define VERTEX_SIZE_CHECK()
 
 #endif
+
+#else // TORQUE_WALKABOUT_ENABLED
+
+#ifdef TORQUE_DEBUG
+U32 mMaxVerts;
+
+#define INIT_VERTEX_SIZE(x) mMaxVerts = x;
+#define VERTEX_BOUNDS_CHECK() AssertFatal( mCurVertIndex < mMaxVerts, "PrimBuilder encountered an out of bounds vertex! Break and debug!" );
+
+// This next check shouldn't really be used a lot unless you are tracking down
+// a specific bug. -pw
+#define VERTEX_SIZE_CHECK() AssertFatal( mCurVertIndex <= mMaxVerts, "PrimBuilder allocated more verts than you used! Break and debug or rendering artifacts could occur." );
+
+#else
+
+#define INIT_VERTEX_SIZE(x)
+#define VERTEX_BOUNDS_CHECK()
+#define VERTEX_SIZE_CHECK()
+
+#endif
+#endif // TORQUE_WALKABOUT_ENABLED
 
 //-----------------------------------------------------------------------------
 // begin
