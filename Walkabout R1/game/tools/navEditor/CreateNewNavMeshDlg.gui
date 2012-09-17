@@ -352,6 +352,7 @@ function CreateNewNavMeshDlg::create(%this)
       };
    }
    MissionGroup.add(%mesh);
+   NavEditorGui.selectObject(%mesh);
 
    Canvas.popDialog(CreateNewNavMeshDlg);
 }
