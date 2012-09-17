@@ -1092,26 +1092,27 @@ namespace Nav {
 
       PROFILE_SCOPE(NavMesh_Render);
 
-      if(isSelected())
-      {
-         GFXDrawUtil *drawer = GFX->getDrawUtil();
-
-         GFXStateBlockDesc desc;
-         desc.setZReadWrite(true, false);
-         desc.setBlend(true);
-         desc.setCullMode(GFXCullNone);
-
-         drawer->drawCube(desc, getWorldBox(), ColorI(136, 228, 255, 45));
-         desc.setFillModeWireframe();
-         drawer->drawCube(desc, getWorldBox(), ColorI::BLACK);
-      }
-
       // Recast debug draw
       duDebugDrawTorque dd;
       NetObject *no = getServerObject();
       if(no)
       {
          NavMesh *n = static_cast<NavMesh*>(no);
+
+         if(n->isSelected())
+         {
+            GFXDrawUtil *drawer = GFX->getDrawUtil();
+
+            GFXStateBlockDesc desc;
+            desc.setZReadWrite(true, false);
+            desc.setBlend(true);
+            desc.setCullMode(GFXCullNone);
+
+            drawer->drawCube(desc, getWorldBox(), ColorI(136, 228, 255, 45));
+            desc.setFillModeWireframe();
+            drawer->drawCube(desc, getWorldBox(), ColorI::BLACK);
+         }
+
          bool build = n->mBuilding;
          if(build)
             dd.overrideColour(duRGBA(255, 0, 0, 80));
