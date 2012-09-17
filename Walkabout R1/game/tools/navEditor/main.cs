@@ -2,6 +2,7 @@
 // Copyright (c) Daniel Buckmaster 2012
 //-----------------------------------------------------------------------------
 
+// These values should align with enum PolyFlags in walkabout/nav.h
 $Nav::WalkFlag = 1 << 0;
 $Nav::SwimFlag = 1 << 1;
 $Nav::JumpFlag = 1 << 2;
