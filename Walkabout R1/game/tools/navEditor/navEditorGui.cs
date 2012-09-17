@@ -6,25 +6,15 @@ $Nav::EditorOpen = false;
 
 function NavEditorGui::onEditorActivated(%this)
 {
-   // When the editor is activated, the last NavMesh selected remains so. All
-   // other objects are deselected.
-   %count = EWorldEditor.getSelectionSize();
-   %nm = "";
-   while(%count)
-   {
-      %obj = EWorldEditor.getSelectedObject(0);
-      if(%obj.getClassName() $= "NavMesh")
-         %nm = %obj;
-      EWorldEditor.unselectObject(%obj);
-      %count--;
-   }
-   if(isObject(%nm))
-      %this.selectObject(%nm);
+   if(%this.selectedObject)
+      %this.selectObject(%this.selectedObject);
    %this.prepSelectionMode();
 }
 
 function NavEditorGui::onEditorDeactivated(%this)
 {
+   if(%this.getMesh())
+      %this.deselect();
 }
 
 function NavEditorGui::onModeSet(%this, %mode)
@@ -88,13 +78,14 @@ function NavEditorGui::selectObject(%this, %obj)
 
 function NavEditorGui::onObjectSelected(%this, %obj)
 {
-   if(%this.selectedObject == %obj)
-      return;
    if(isObject(%this.selectedObject))
       %this.deselect();
    %this.selectedObject = %obj;
    if(isObject(%obj))
+   {
       %this.selectMesh(%obj);
+      NavInspector.inspect(%obj);
+   }
 }
 
 function NavEditorGui::deleteMesh(%this)
