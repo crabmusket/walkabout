@@ -55,13 +55,18 @@
 	<ol>
 		<li>Copy <span class="path">Walkabout/Engine/source</span> to <span class="path">engine directory</span> and select ‘Copy and Replace’ for all items when prompted.</li>
 		<li>Copy <span class="path">Walkabout/game</span> to <span class="path">game directory</span> and select ‘Copy and Replace’ for all items when prompted.</li>
-		<li>In <span class="path">install directory/Tools/projectGeneraor/modules</span>, open <span class="path">T3D.inc</span> with a regular text editor
+		<li>Copy <span class="path">Walkabout/Tools/projectGenerator/modules/walkabout.inc</span> to <span class="path">install directory/Tools/projectGenerator/modules</span>
+		<li>In <span class="path">project directory/buildFiles/config</span>, open <span class="path">projectCode.conf</span> with a regular text editor
 		(Notepad, Notepad++, and WordPad should be fine. Do not use Microsoft Word, OpenOffice, or other word processors!).<br />
-		After this line:<br />
-		<pre>addEngineSrcDir('environment');</pre>
+		After these lines:<br />
+		<pre>
+   // Here is an example of how to include your project specific code 
+   // In this case all the code in the "custom" folder in your project's source directory would be added
+   // addSrcDir('../source/custom');
+		</pre>
 		Add this: <br />
-		<pre>addEngineSrcDir('walkabout');</pre></li>
-		<li>In project directory, double-click on <span class="path">generateProjects.bat</span>.</li>
+		<pre>   includeModule( 'walkabout' );</pre></li>
+		<li>In <span class="path">project directory</span>, double-click on <span class="path">generateProjects.bat</span>.</li>
 		<li>Recompile the engine.</li>
 	</ol>
 
@@ -86,8 +91,8 @@
 
 	<p>Next, compare <span class="path">Walkabout/game</span> to <span class="path">game directory</span>. Copy over files that don’t exist in your tree, and edit any conflicts within existing files.</p>
 
-	<p>Finally, follow steps 3-5 from <a href="#easy">Easy install</a>.
-	Note that step 4 will rewrite your Visual Studio project files, so if you’ve modified them, you will need to redo those modifications.</p>
+	<p>Finally, follow steps 3-6 from <a href="#easy">Easy install</a>.
+	Note that step 5 will rewrite your Visual Studio project files, so if you’ve modified them, you will need to redo those modifications.</p>
 
 	<h1 id="custom">Custom install (existing project)</h1>
 
@@ -1094,7 +1099,9 @@ static void CheckVertexBounds()
 	<p class="title">4. REGENERATE SOLUTION</p>
 
 	<p>Follow steps 3, 4 and 5 from the Easy install guide above.
-	This will create a new Visual Studio solution for your project, so if you’ve made changes to it, you’ll need to redo them.</p>
+	This will create a new Visual Studio solution for your project, so if you’ve made changes to it, you’ll need to redo them.
+	Finally, follow step 6 (recompile the engine).
+	You're good to go!</p>
 
 	<h1 id="UAISK">UAISK integration</h1>
 
