@@ -877,8 +877,6 @@ namespace Nav {
       // Make sure we've already built or loaded.
       if(!nm)
          return;
-      // Recast context.
-      rcContext ctx(false);
       // Iterate over tiles.
       for(U32 i = 0; i < mTiles.size(); i++)
       {
@@ -889,12 +887,17 @@ namespace Nav {
          // Mark as dirty.
          mDirtyTiles.push(i);
       }
+      if(mDirtyTiles.size())
+         ctx->startTimer(RC_TIMER_TOTAL);
    }
 
    void NavMesh::buildTile(const U32 &tile)
    {
       if(tile < mTiles.size())
+      {
          mDirtyTiles.push(tile);
+         ctx->startTimer(RC_TIMER_TOTAL);
+      }
    }
 
    void NavMesh::buildLinks()
@@ -902,8 +905,6 @@ namespace Nav {
       // Make sure we've already built or loaded.
       if(!nm)
          return;
-      // Recast context.
-      rcContext ctx(false);
       // Iterate over tiles.
       for(U32 i = 0; i < mTiles.size(); i++)
       {
@@ -928,6 +929,8 @@ namespace Nav {
             }
          }
       }
+      if(mDirtyTiles.size())
+         ctx->startTimer(RC_TIMER_TOTAL);
    }
 
    void NavMesh::deleteCoverPoints()
