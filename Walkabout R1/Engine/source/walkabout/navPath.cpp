@@ -395,7 +395,10 @@ namespace Nav {
    {
       setProcessTick(false);
       visitNext();
+      S32 store = mMaxIterations;
+      mMaxIterations = INT_MAX;
       while(update());
+      mMaxIterations = store;
       return finalise();
    }
 
