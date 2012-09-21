@@ -1,7 +1,8 @@
-//
-// T3D 1.1 implementation of Recast's rcContext.
-// Daniel Buckmaster, 2011
-//
+//-----------------------------------------------------------------------------
+// Walkabout Navigation Toolkit
+// Copyright (c) 2012 Daniel Buckmaster
+// Permission is NOT granted to freely distribute the contents of this file.
+//-----------------------------------------------------------------------------
 
 #ifndef _NAV_CONTEXT_H_
 #define _NAV_CONTEXT_H_

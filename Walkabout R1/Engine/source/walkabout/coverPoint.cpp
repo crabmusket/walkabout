@@ -1,6 +1,7 @@
 //-----------------------------------------------------------------------------
-// Torque
-// Copyright GarageGames, LLC 2011
+// Walkabout Navigation Toolkit
+// Copyright (c) 2012 Daniel Buckmaster
+// Permission is NOT granted to freely distribute the contents of this file.
 //-----------------------------------------------------------------------------
 
 #include "coverPoint.h"

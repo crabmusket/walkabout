@@ -1,7 +1,8 @@
-//
-// T3D 1.1 NavPath class for use with NavMesh, based on the Recast/Detour library.
-// Copyright(c) Daniel Buckmaster, 2012
-//
+//-----------------------------------------------------------------------------
+// Walkabout Navigation Toolkit
+// Copyright (c) 2012 Daniel Buckmaster
+// Permission is NOT granted to freely distribute the contents of this file.
+//-----------------------------------------------------------------------------
 
 #ifndef _NAVPATH_H_
 #define _NAVPATH_H_

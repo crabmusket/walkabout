@@ -1,8 +1,8 @@
-//
-// Header for Recast integration with Torque 3D 1.1 Final in Nav namespace.
-// Daniel Buckmaster, 2011
-// With huge thanks to Mikko Mononen http://code.google.com/p/recastnavigation/
-//
+//-----------------------------------------------------------------------------
+// Walkabout Navigation Toolkit
+// Copyright (c) 2012 Daniel Buckmaster
+// Permission is NOT granted to freely distribute the contents of this file.
+//-----------------------------------------------------------------------------
 
 #ifndef _NAV_H_
 #define _NAV_H_

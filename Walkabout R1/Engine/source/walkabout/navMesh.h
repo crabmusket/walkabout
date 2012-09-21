@@ -1,7 +1,8 @@
-//
-// T3D 1.1 NavMesh class and supporting methods.
-// Copyright (c) Daniel Buckmaster, 2012
-//
+//-----------------------------------------------------------------------------
+// Walkabout Navigation Toolkit
+// Copyright (c) 2012 Daniel Buckmaster
+// Permission is NOT granted to freely distribute the contents of this file.
+//-----------------------------------------------------------------------------
 
 #ifndef _NAVMESH_H_
 #define _NAVMESH_H_
