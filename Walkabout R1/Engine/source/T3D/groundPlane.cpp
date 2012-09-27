@@ -291,6 +291,7 @@ void GroundPlane::buildConvex( const Box3F& box, Convex* convex )
 #ifdef TORQUE_WALKABOUT_ENABLED
 bool GroundPlane::buildPolyList( PolyListContext context, AbstractPolyList* polyList, const Box3F& box, const SphereF& )
 #else
+bool GroundPlane::buildPolyList( PolyListContext context, AbstractPolyList* polyList, const Box3F&, const SphereF& )
 #endif // TORQUE_WALKABOUT_ENABLED
 {
    polyList->setObject( this );
