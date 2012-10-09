@@ -141,8 +141,10 @@
 
 	<h2 id="config-mods">Project configuration</h2>
 	<p>Torque 3D comes with a handy system to configure your projects and automatically generate Visual Studio solution files.
-	Instead of asking you to add all the new source files manually, a Walkabout install typically involves adding a line to the project configuration for the engine.
-	This way, every time you start a new project, Walkabout is automatically included, without you having to modify your VS solution after it is generated.</p>
-	<p class="path">Tools/projectGenerator/modules/T3D.inc</p>
+	Instead of asking you to add all the new source files manually, a Walkabout install typically involves including a project generator module.
+	This module is defined in <span class="path">Tools/projectGenerator/modules/walkabout.inc</span> so it is available to all your projects.
+	However, you need to include the module in the <span class="path">projectCode.conf</span> file for each project you want to use Walkabout in.</p>
+	<p class="path">Tools/projectGenerator/modules/walkabout.inc</p>
+	<p class="path">your project/buildFiles/config/projectCode.conf</p>
 </body>
 </html>
