@@ -93,12 +93,17 @@ pre {
 	background: #F0F0F0;
 	margin: 1em 0;
 	padding: 1em;
+	font-size: 9pt;
 }
 
 .path {
 	font-family: "Courier";
 	/*font-size: 10pt;*/
 	text-decoration: underline;
+}
+
+.code {
+	font-family: "Courier";
 }
 
 /** Lists **/
