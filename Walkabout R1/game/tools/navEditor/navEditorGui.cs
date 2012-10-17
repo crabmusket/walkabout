@@ -105,7 +105,7 @@ function NavEditorGui::deleteSelected(%this)
       // Try to delete the selected NavMesh.
       if(isObject(NavEditorGui.selectedObject))
          MessageBoxYesNo("Warning",
-            "Are you sure you want to delete this NavMesh?",
+            "Are you sure you want to delete" SPC NavEditorGui.selectedObject.getName(),
             "NavEditorGui.deleteMesh();");
    case "TestMode":
       %this.getPlayer().delete();
