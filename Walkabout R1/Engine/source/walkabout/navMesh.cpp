@@ -284,7 +284,7 @@ namespace Nav {
       Parent::setScale(scale);
    }
 
-   void NavMesh::addLink(const Point3F &from, const Point3F &to)
+   S32 NavMesh::addLink(const Point3F &from, const Point3F &to, U32 flags)
    {
       Point3F rcFrom = DTStoRC(from), rcTo = DTStoRC(to);
       mLinkVerts.push_back(rcFrom.x);
@@ -297,7 +297,7 @@ namespace Nav {
       mLinkRads.push_back(mWalkableRadius);
       mLinkDirs.push_back(0);
       mLinkAreas.push_back(OffMeshArea);
-      {
+      if (flags == 0) {
          Point3F dir = to - from;
          F32 drop = -dir.z;
          dir.z = 0;
@@ -311,6 +311,14 @@ namespace Nav {
       mLinkSelectStates.push_back(Unselected);
       mDeleteLinks.push_back(false);
       mCurLinkID++;
+      return mLinkIDs.size() - 1;
+   }
+
+   DefineEngineMethod(NavMesh, addLink, S32, (Point3F from, Point3F to, U32 flags), (0),
+      "Add a link to this NavMesh between two points.\n\n"
+      "")
+   {
+      return object->addLink(from, to, flags);
    }
 
    S32 NavMesh::getLink(const Point3F &pos)
@@ -327,7 +335,13 @@ namespace Nav {
       return -1;
    }
 
-   LinkData NavMesh::getLinkData(U32 idx)
+   DefineEngineMethod(NavMesh, getLink, S32, (Point3F pos),,
+      "Get the off-mesh link closest to a given world point.")
+   {
+      return object->getLink(pos);
+   }
+
+   LinkData NavMesh::getLinkFlags(U32 idx)
    {
       if(idx < mLinkIDs.size())
       {
@@ -336,13 +350,26 @@ namespace Nav {
       return LinkData();
    }
 
-   void NavMesh::setLinkData(U32 idx, const LinkData &d)
+   DefineEngineMethod(NavMesh, getLinkFlags, S32, (U32 id),,
+      "Get the flags set for a particular off-mesh link.")
+   {
+      return object->getLinkFlags(id).getFlags();
+   }
+
+   void NavMesh::setLinkFlags(U32 idx, const LinkData &d)
    {
       if(idx < mLinkIDs.size())
       {
          mLinkFlags[idx] = d.getFlags();
          mLinksUnsynced[idx] = true;
       }
+   }
+
+   DefineEngineMethod(NavMesh, setLinkFlags, void, (U32 id, U32 flags),,
+      "Set the flags of a particular off-mesh link.")
+   {
+      LinkData d(flags);
+      object->setLinkFlags(id, d);
    }
 
    Point3F NavMesh::getLinkStart(U32 idx)
@@ -353,12 +380,24 @@ namespace Nav {
          mLinkVerts[idx*6 + 2]));
    }
 
+   DefineEngineMethod(NavMesh, getLinkStart, Point3F, (U32 id),,
+      "Get the starting point of an off-mesh link.")
+   {
+      return object->getLinkStart(id);
+   }
+
    Point3F NavMesh::getLinkEnd(U32 idx)
    {
       return RCtoDTS(Point3F(
          mLinkVerts[idx*6 + 3],
          mLinkVerts[idx*6 + 4],
          mLinkVerts[idx*6 + 5]));
+   }
+
+   DefineEngineMethod(NavMesh, getLinkEnd, Point3F, (U32 id),,
+      "Get the ending point of an off-mesh link.")
+   {
+      return object->getLinkEnd(id);
    }
 
    void NavMesh::selectLink(U32 idx, bool select, bool hover)
@@ -422,6 +461,18 @@ namespace Nav {
          else
             mLinksUnsynced[idx] = true;
       }
+   }
+
+   DefineEngineMethod(NavMesh, deleteLink, void, (U32 id),,
+      "Delete a given off-mesh link.")
+   {
+      object->deleteLink(id);
+   }
+
+   DefineEngineMethod(NavMesh, deleteLinks, void, (),,
+      "Deletes all off-mesh links on this NavMesh.")
+   {
+      //object->eraseLinks();
    }
 
    bool NavMesh::build()

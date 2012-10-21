@@ -106,16 +106,22 @@ namespace Nav {
       /// @{
 
       /// Add an off-mesh link.
-      void addLink(const Point3F &from, const Point3F &to);
+      S32 addLink(const Point3F &from, const Point3F &to, U32 flags = 0);
 
       /// Get the ID of the off-mesh link near the point.
       S32 getLink(const Point3F &pos);
 
-      /// Get data about a link.
-      LinkData getLinkData(U32 idx);
+      /// Get the starting point of a link.
+      Point3F getLinkStart(U32 idx);
 
-      /// Set data for a link.
-      void setLinkData(U32 idx, const LinkData &d);
+      /// Get the ending point of a link.
+      Point3F getLinkEnd(U32 idx);
+
+      /// Get the flags used by a link.
+      LinkData getLinkFlags(U32 idx);
+
+      /// Set flags used by a link.
+      void setLinkFlags(U32 idx, const LinkData &d);
 
       /// Set the selected state of a link.
       void selectLink(U32 idx, bool select, bool hover = true);
@@ -316,9 +322,6 @@ namespace Nav {
       Vector<bool> mDeleteLinks;         ///< Link will be deleted next build.
 
       U32 mCurLinkID;
-
-      Point3F getLinkStart(U32 idx);
-      Point3F getLinkEnd(U32 idx);
 
       void eraseLink(U32 idx);
       void eraseLinks();

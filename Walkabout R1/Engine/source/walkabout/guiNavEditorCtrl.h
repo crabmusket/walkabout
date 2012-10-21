@@ -92,7 +92,7 @@ public:
    String mSpawnDatablock;
 
    void deleteLink();
-   void setLinkData(const Nav::LinkData &d);
+   void setLinkFlags(const Nav::LinkData &d);
 
    void buildTile();
 

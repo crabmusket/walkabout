@@ -167,18 +167,18 @@ DefineEngineMethod(GuiNavEditorCtrl, deleteLink, void, (),,
    object->deleteLink();
 }
 
-void GuiNavEditorCtrl::setLinkData(const Nav::LinkData &d)
+void GuiNavEditorCtrl::setLinkFlags(const Nav::LinkData &d)
 {
    if(mMode == mLinkMode && !mMesh.isNull() && mLink != -1)
    {
-      mMesh->setLinkData(mLink, d);
+      mMesh->setLinkFlags(mLink, d);
    }
 }
 
-DefineEngineMethod(GuiNavEditorCtrl, setLinkData, void, (U32 flags),,
+DefineEngineMethod(GuiNavEditorCtrl, setLinkFlags, void, (U32 flags),,
    "@Brief Set jump and drop properties of the selected link.")
 {
-   object->setLinkData(Nav::LinkData(flags));
+   object->setLinkFlags(Nav::LinkData(flags));
 }
 
 void GuiNavEditorCtrl::buildTile()
@@ -305,7 +305,7 @@ void GuiNavEditorCtrl::on3DMouseDown(const Gui3DMouseEvent & event)
                mMesh->selectLink(mLink, false);
             mMesh->selectLink(link, true, false);
             mLink = link;
-            Nav::LinkData d = mMesh->getLinkData(mLink);
+            Nav::LinkData d = mMesh->getLinkFlags(mLink);
             Con::executef(this, "onLinkSelected", Con::getIntArg(d.getFlags()));
          }
          else
