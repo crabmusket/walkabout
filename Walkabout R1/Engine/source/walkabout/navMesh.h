@@ -89,9 +89,6 @@ namespace Nav {
       U32 mMaxPolysPerTile;
       /// @}
 
-      /// Save imtermediate navmesh creation data?
-      bool mSaveIntermediates;
-
       /// @}
 
       /// Return the index of the tile included by this point.
@@ -231,6 +228,9 @@ namespace Nav {
 
       /// Builds the next tile in the dirty list.
       void buildNextTile();
+
+      /// Save imtermediate navmesh creation data?
+      bool mSaveIntermediates;
 
       /// @name Tiles
       /// @{

@@ -78,6 +78,52 @@ namespace Nav {
       return smEventManager;
    }
 
+   DefineConsoleFunction(getNavMeshEventManager, S32, (),,
+      "@brief Get the EventManager object for all NavMesh updates.")
+   {
+      return NavMesh::getEventManager()->getId();
+   }
+
+   DefineConsoleFunction(WalkaboutUpdateAll, void, (S32 objid, bool remove), (0, false),
+      "@brief Update all NavMesh tiles that intersect the given object's world box.")
+   {
+      SceneObject *obj;
+      if(!Sim::findObject(objid, obj))
+         return;
+      if(remove)
+         obj->disableCollision();
+      SimSet *set = NavMesh::getServerSet();
+      for(U32 i = 0; i < set->size(); i++)
+      {
+         NavMesh *m = static_cast<Nav::NavMesh*>(set->at(i));
+         m->buildTiles(obj->getWorldBox());
+      }
+      if(remove)
+         obj->enableCollision();
+   }
+
+   DefineConsoleFunction(WalkaboutUpdateMesh, void, (S32 meshid, S32 objid, bool remove), (0, 0, false),
+      "@brief Update all tiles in a given NavMesh that intersect the given object's world box.")
+   {
+      NavMesh *mesh;
+      SceneObject *obj;
+      if(!Sim::findObject(meshid, mesh))
+      {
+         Con::errorf("WalkaboutUpdateMesh: cannot find NavMesh %d", meshid);
+         return;
+      }
+      if(!Sim::findObject(objid, obj))
+      {
+         Con::errorf("WalkaboutUpdateMesh: cannot find SceneObject %d", objid);
+         return;
+      }
+      if(remove)
+         obj->disableCollision();
+      mesh->buildTiles(obj->getWorldBox());
+      if(remove)
+         obj->enableCollision();
+   }
+
    NavMesh::NavMesh()
    {
       mTypeMask |= MarkerObjectType;
@@ -527,11 +573,23 @@ namespace Nav {
       return true;
    }
 
+   DefineEngineMethod(NavMesh, build, bool, (bool background, bool save), (true, false),
+      "@brief Create a Recast nav mesh.")
+   {
+      return object->build(background, save);
+   }
+
    void NavMesh::cancelBuild()
    {
       while(mDirtyTiles.size()) mDirtyTiles.pop();
       ctx->stopTimer(RC_TIMER_TOTAL);
       mBuilding = false;
+   }
+
+   DefineEngineMethod(NavMesh, cancelBuild, void, (),,
+      "@brief Cancel the current NavMesh build.")
+   {
+      object->cancelBuild();
    }
 
    void NavMesh::inspectPostApply()
@@ -939,6 +997,12 @@ namespace Nav {
          ctx->startTimer(RC_TIMER_TOTAL);
    }
 
+   DefineEngineMethod(NavMesh, buildTiles, void, (Box3F box),,
+      "@brief Rebuild the tiles overlapped by the input box.")
+   {
+      return object->buildTiles(box);
+   }
+
    void NavMesh::buildTile(const U32 &tile)
    {
       if(tile < mTiles.size())
@@ -981,11 +1045,23 @@ namespace Nav {
          ctx->startTimer(RC_TIMER_TOTAL);
    }
 
+   DefineEngineMethod(NavMesh, buildLinks, void, (),,
+      "@brief Build tiles of this mesh where there are unsynchronised links.")
+   {
+      object->buildLinks();
+   }
+
    void NavMesh::deleteCoverPoints()
    {
       SimSet *set = NULL;
       if(Sim::findObject(mCoverSet, set))
          set->deleteAllObjects();
+   }
+
+   DefineEngineMethod(NavMesh, deleteCoverPoints, void, (),,
+      "@brief Remove all cover points for this NavMesh.")
+   {
+      object->deleteCoverPoints();
    }
 
    bool NavMesh::createCoverPoints()
@@ -1078,6 +1154,12 @@ namespace Nav {
          }
       }
       return true;
+   }
+
+   DefineEngineMethod(NavMesh, createCoverPoints, bool, (),,
+      "@brief Create cover points for this NavMesh.")
+   {
+      return object->createCoverPoints();
    }
 
    bool NavMesh::testEdgeCover(const Point3F &pos, const VectorF &dir, CoverPointData &data)
@@ -1349,6 +1431,12 @@ namespace Nav {
       return true;
    }
 
+   DefineEngineMethod(NavMesh, load, bool, (),,
+      "@brief Load this NavMesh from its file.")
+   {
+      return object->load();
+   }
+
    bool NavMesh::save()
    {
 #ifdef WALKABOUT_DEMO
@@ -1406,97 +1494,15 @@ namespace Nav {
 #endif
    }
 
-   void NavMesh::write(Stream &stream, U32 tabStop, U32 flags)
-   {
-      save();
-      Parent::write(stream, tabStop, flags);
-   }
-
-   DefineEngineMethod(NavMesh, build, bool, (bool background, bool save), (true, false),
-      "@brief Create a Recast nav mesh.")
-   {
-      return object->build(background, save);
-   }
-
-   DefineEngineMethod(NavMesh, createCoverPoints, bool, (),,
-      "@brief Create cover points for this NavMesh.")
-   {
-      return object->createCoverPoints();
-   }
-
-   DefineEngineMethod(NavMesh, deleteCoverPoints, void, (),,
-      "@brief Remove all cover points for this NavMesh.")
-   {
-      object->deleteCoverPoints();
-   }
-
-   DefineEngineMethod(NavMesh, buildTiles, void, (Box3F box),,
-      "@brief Rebuild the tiles overlapped by the input box.")
-   {
-      return object->buildTiles(box);
-   }
-
-   DefineEngineMethod(NavMesh, buildLinks, void, (),,
-      "@brief Build tiles of this mesh where there are unsynchronised links.")
-   {
-      object->buildLinks();
-   }
-
-   DefineEngineMethod(NavMesh, load, bool, (),,
-      "@brief Load this NavMesh from its file.")
-   {
-      return object->load();
-   }
-
    DefineEngineMethod(NavMesh, save, void, (),,
       "@brief Save this NavMesh to its file.")
    {
       object->save();
    }
 
-   DefineConsoleFunction(getNavMeshEventManager, S32, (),,
-      "@brief Get the EventManager object for all NavMesh updates.")
+   void NavMesh::write(Stream &stream, U32 tabStop, U32 flags)
    {
-      return NavMesh::getEventManager()->getId();
-   }
-
-   DefineConsoleFunction(WalkaboutUpdateAll, void, (S32 objid, bool remove), (0, false),
-      "@brief Update all NavMesh tiles that intersect the given object's world box.")
-   {
-      SceneObject *obj;
-      if(!Sim::findObject(objid, obj))
-         return;
-      if(remove)
-         obj->disableCollision();
-      SimSet *set = NavMesh::getServerSet();
-      for(U32 i = 0; i < set->size(); i++)
-      {
-         NavMesh *m = static_cast<Nav::NavMesh*>(set->at(i));
-         m->buildTiles(obj->getWorldBox());
-      }
-      if(remove)
-         obj->enableCollision();
-   }
-
-   DefineConsoleFunction(WalkaboutUpdateMesh, void, (S32 meshid, S32 objid, bool remove), (0, 0, false),
-      "@brief Update all tiles in a given NavMesh that intersect the given object's world box.")
-   {
-      NavMesh *mesh;
-      SceneObject *obj;
-      if(!Sim::findObject(meshid, mesh))
-      {
-         Con::errorf("WalkaboutUpdateMesh: cannot find NavMesh %d", meshid);
-         return;
-      }
-      if(!Sim::findObject(objid, obj))
-      {
-         Con::errorf("WalkaboutUpdateMesh: cannot find SceneObject %d", objid);
-         return;
-      }
-      if(remove)
-         obj->disableCollision();
-      mesh->buildTiles(obj->getWorldBox());
-      if(remove)
-         obj->enableCollision();
+      save();
+      Parent::write(stream, tabStop, flags);
    }
 };
