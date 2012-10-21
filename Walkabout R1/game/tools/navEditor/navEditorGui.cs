@@ -3,6 +3,9 @@
 //-----------------------------------------------------------------------------
 
 $Nav::EditorOpen = false;
+$Nav::Editor::renderMesh = true;
+$Nav::Editor::renderPortals = false;
+$Nav::Editor::renderBVTree = false;
 
 function NavEditorGui::onEditorActivated(%this)
 {
