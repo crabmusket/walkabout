@@ -186,7 +186,7 @@ function NavEditorGui::updateLinkFlags(%this)
    if(isObject(%this.getMesh()))
    {
       %properties = NavEditorOptionsWindow-->LinkProperties;
-      %this.setLinkData(getLinkFlags(%properties));
+      %this.setLinkFlags(getLinkFlags(%properties));
       %this.isDirty = true;
    }
 }
