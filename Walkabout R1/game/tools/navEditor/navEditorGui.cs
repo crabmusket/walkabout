@@ -6,6 +6,8 @@ $Nav::EditorOpen = false;
 $Nav::Editor::renderMesh = true;
 $Nav::Editor::renderPortals = false;
 $Nav::Editor::renderBVTree = false;
+$Nav::Editor::backgroundBuild = true;
+$Nav::Editor::saveIntermediates = false;
 
 function NavEditorGui::onEditorActivated(%this)
 {
@@ -123,7 +125,7 @@ function NavEditorGui::buildSelectedMeshes(%this)
 {
    if(isObject(%this.getMesh()))
    {
-      %this.getMesh().build();
+      %this.getMesh().build($Nav::Editor::backgroundBuild, $Nav::Editor::saveIntermediates);
       %this.isDirty = true;
    }
 }

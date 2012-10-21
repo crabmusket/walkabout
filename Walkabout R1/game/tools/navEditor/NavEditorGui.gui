@@ -216,6 +216,41 @@
                text = "Build NavMesh";
                command = "NavEditorGui.buildSelectedMeshes();";
             };
+            new GuiCheckboxCtrl() {
+               internalName = "BackgroundBuildButton";
+               text = "Background";
+               groupNum = "-1";
+               buttonType = "ToggleButton";
+               useMouseEvents = "0";
+               extent = "75 20";
+               minExtent = "8 2";
+               profile = "GuiCheckBoxProfile";
+               visible = "1";
+               active = "1";
+               variable = "$Nav::Editor::backgroundBuild";
+               tooltipProfile = "GuiToolTipProfile";
+               hovertime = "1000";
+               isContainer = "0";
+               canSave = "1";
+               canSaveDynamicFields = "0";
+            };
+            new GuiCheckboxCtrl() {
+               internalName = "SaveIntermediatesButton";
+               text = "Keep intermediates";
+               groupNum = "-1";
+               buttonType = "ToggleButton";
+               useMouseEvents = "0";
+               extent = "105 20";
+               profile = "GuiCheckBoxProfile";
+               visible = "1";
+               active = "1";
+               variable = "$Nav::Editor::saveIntermediates";
+               tooltipProfile = "GuiToolTipProfile";
+               hovertime = "1000";
+               isContainer = "0";
+               canSave = "1";
+               canSaveDynamicFields = "0";
+            };
          };
          new GuiFlexibleArrayControl()
          {
