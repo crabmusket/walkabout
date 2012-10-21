@@ -36,11 +36,9 @@ namespace Nav {
       /// @name NavMesh build
       /// @{
 
-      /// Do we build in a separate thread?
-      bool mBackgroundBuild;
       /// Initiates the navmesh build process, which includes notifying the
       /// clients and posting an event.
-      bool build();
+      bool build(bool background = true, bool saveIntermediates = false);
       /// Stop a build in progress.
       void cancelBuild();
       /// Generate cover points from a nav mesh.

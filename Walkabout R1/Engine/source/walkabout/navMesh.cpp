@@ -84,8 +84,6 @@ namespace Nav {
       mFileName = StringTable->insert("");
       mNetFlags.clear(Ghostable);
 
-      mBackgroundBuild = true;
-
       mSaveIntermediates = true;
       nm = NULL;
       ctx = NULL;
@@ -145,16 +143,6 @@ namespace Nav {
 
    void NavMesh::initPersistFields()
    {
-      addGroup("NavMesh Build");
-
-      addField("saveIntermediates", TypeBool, Offset(mSaveIntermediates, NavMesh),
-         "Store intermediate results for debug rendering.");
-
-      addField("backgroundBuild", TypeBool, Offset(mBackgroundBuild, NavMesh),
-         "Build NavMesh in the background (slower).");
-
-      endGroup("NavMesh Build");
-
       addGroup("NavMesh Options");
 
       addField("fileName", TypeString, Offset(mFileName, NavMesh),
@@ -475,7 +463,7 @@ namespace Nav {
       //object->eraseLinks();
    }
 
-   bool NavMesh::build()
+   bool NavMesh::build(bool background, bool saveIntermediates)
    {
       if(mBuilding)
          cancelBuild();
@@ -526,7 +514,15 @@ namespace Nav {
       mLinksUnsynced.fill(false);
       mCurLinkID = 0;
 
+      mSaveIntermediates = saveIntermediates;
+
       updateTiles(true);
+
+      if(!background)
+      {
+         while(mDirtyTiles.size())
+            buildNextTile();
+      }
 
       return true;
    }
@@ -1416,10 +1412,10 @@ namespace Nav {
       Parent::write(stream, tabStop, flags);
    }
 
-   DefineEngineMethod(NavMesh, build, bool, (),,
+   DefineEngineMethod(NavMesh, build, bool, (bool background, bool save), (true, false),
       "@brief Create a Recast nav mesh.")
    {
-      return object->build();
+      return object->build(background, save);
    }
 
    DefineEngineMethod(NavMesh, createCoverPoints, bool, (),,
