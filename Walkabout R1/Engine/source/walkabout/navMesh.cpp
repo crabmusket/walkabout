@@ -375,6 +375,17 @@ namespace Nav {
       return object->getLink(pos);
    }
 
+   S32 NavMesh::getLinkCount()
+   {
+      return mLinkIDs.size();
+   }
+
+   DefineEngineMethod(NavMesh, getLinkCount, S32, (),,
+      "Return the number of links this mesh has.")
+   {
+      return object->getLinkCount();
+   }
+
    LinkData NavMesh::getLinkFlags(U32 idx)
    {
       if(idx < mLinkIDs.size())

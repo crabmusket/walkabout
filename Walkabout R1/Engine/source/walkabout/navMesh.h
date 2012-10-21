@@ -106,6 +106,9 @@ namespace Nav {
       /// Get the ID of the off-mesh link near the point.
       S32 getLink(const Point3F &pos);
 
+      /// Get the number of links this mesh has.
+      S32 getLinkCount();
+
       /// Get the starting point of a link.
       Point3F getLinkStart(U32 idx);
 
