@@ -462,8 +462,6 @@ new SimGroup(MissionGroup) {
       };
    };
    new NavMesh(Nav) {
-      saveIntermediates = "1";
-      backgroundBuild = "1";
       fileName = "levels/navtest.nm";
       cellSize = "0.2";
       cellHeight = "0.2";
