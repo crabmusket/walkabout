@@ -542,21 +542,6 @@ new SimGroup(MissionGroup) {
       canSave = "1";
       canSaveDynamicFields = "1";
    };
-   new StaticShape(Marker01) {
-      isAIControlled = "0";
-      dataBlock = "DefaultPlayerDataMarker";
-      position = "-9.86219 20.5459 1.24381";
-      rotation = "-0.00199959 0.0427945 0.999082 174.655";
-      scale = "1 1 1";
-      hidden = "1";
-      canSave = "1";
-      canSaveDynamicFields = "1";
-         behavior = "KillableNPCBehavior";
-         block = "DefaultPlayerData";
-         botBelongsToMe = "4663";
-         respawnCount = "0";
-         respawnCounter = "0";
-   };
    new SimGroup(NavCover) {
       canSave = "1";
       canSaveDynamicFields = "1";
