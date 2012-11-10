@@ -498,7 +498,7 @@ namespace Nav {
 
    void NavMesh::deleteLink(U32 idx)
    {
-      if(idx < mLinkIDs.size())
+      if(idx < mLinkIDs.size() && !mDeleteLinks[idx])
       {
          mDeleteLinks[idx] = true;
          if(mLinksUnsynced[idx])
@@ -517,7 +517,8 @@ namespace Nav {
    DefineEngineMethod(NavMesh, deleteLinks, void, (),,
       "Deletes all off-mesh links on this NavMesh.")
    {
-      //object->eraseLinks();
+      for(U32 i = 0; i < object->getLinkCount(); i++)
+         object->deleteLink(i);
    }
 
    bool NavMesh::build(bool background, bool saveIntermediates)
