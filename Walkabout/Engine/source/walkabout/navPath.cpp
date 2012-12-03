@@ -677,9 +677,9 @@ namespace Nav {
       mXray = stream->readFlag();
       mRenderSearch = stream->readFlag();
 
-      if(mFromSet = stream->readFlag())
+      if((mFromSet = stream->readFlag()) == true)
          mathRead(*stream, &mFrom);
-      if(mToSet = stream->readFlag())
+      if((mToSet = stream->readFlag()) == true)
          mathRead(*stream, &mTo);
 
       if(stream->readFlag())
