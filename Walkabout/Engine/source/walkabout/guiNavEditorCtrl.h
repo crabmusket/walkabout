@@ -82,7 +82,7 @@ public:
    void setMode(String mode, bool sourceShortcut);
    String getMode() { return mMode; }
 
-   void selectMesh(Nav::NavMesh *mesh);
+   void selectMesh(NavMesh *mesh);
    void deselect();
 
    S32 getMeshId();
@@ -92,7 +92,7 @@ public:
    String mSpawnDatablock;
 
    void deleteLink();
-   void setLinkFlags(const Nav::LinkData &d);
+   void setLinkFlags(const LinkData &d);
 
    void buildTile();
 
@@ -115,7 +115,7 @@ protected:
    String mMode;
 
    /// Currently-selected NavMesh.
-   SimObjectPtr<Nav::NavMesh> mMesh;
+   SimObjectPtr<NavMesh> mMesh;
 
    /// @name Link mode
    /// @{

@@ -101,7 +101,7 @@ AIPlayer::AIPlayer()
 #ifdef TORQUE_WALKABOUT_ENABLED
    mJump = None;
    mNavSize = Regular;
-   mLinkTypes = Nav::LinkData(Nav::AllFlags);
+   mLinkTypes = LinkData(AllFlags);
 #endif // TORQUE_WALKABOUT_ENABLED
 
    mIsAiControlled = true;
@@ -645,9 +645,9 @@ void AIPlayer::moveToNode(S32 node)
    {
       U16 flags = mPathData.path->getFlags(node - 1);
       // Jump if we must.
-      if(flags & Nav::LedgeFlag)
+      if(flags & LedgeFlag)
          mJump = Ledge;
-      else if(flags & Nav::JumpFlag)
+      else if(flags & JumpFlag)
          mJump = Now;
       else
          // Catch pathing errors.
@@ -674,7 +674,7 @@ bool AIPlayer::setPathDestination(const Point3F &pos)
    }
 
    // Create a new path.
-   Nav::NavPath *path = new Nav::NavPath();
+   NavPath *path = new NavPath();
    if(path)
    {
       path->mMesh = getNavMesh();
@@ -748,7 +748,7 @@ DefineEngineMethod(AIPlayer, getPathDestination, Point3F, (),,
 	return object->getPathDestination();
 }
 
-void AIPlayer::followNavPath(Nav::NavPath *path)
+void AIPlayer::followNavPath(NavPath *path)
 {
    if(!isServerObject())
       return;
@@ -770,7 +770,7 @@ DefineEngineMethod(AIPlayer, followNavPath, void, (SimObjectId obj),,
 
    "@param obj ID of a NavPath object for the character to follow.")
 {
-   Nav::NavPath *path;
+   NavPath *path;
    if(Sim::findObject(obj, path))
       object->followNavPath(path);
 }
@@ -898,15 +898,15 @@ DefineEngineMethod(AIPlayer, findCover, bool, (Point3F from, F32 radius),,
    return object->findCover(from, radius);
 }
 
-Nav::NavMesh *AIPlayer::findNavMesh() const
+NavMesh *AIPlayer::findNavMesh() const
 {
    // Search for NavMeshes that contain us entirely with the smallest possible
    // volume.
-   Nav::NavMesh *mesh = NULL;
-   SimSet *set = Nav::NavMesh::getServerSet();
+   NavMesh *mesh = NULL;
+   SimSet *set = NavMesh::getServerSet();
    for(U32 i = 0; i < set->size(); i++)
    {
-      Nav::NavMesh *m = static_cast<Nav::NavMesh*>(set->at(i));
+      NavMesh *m = static_cast<NavMesh*>(set->at(i));
       if(m->getWorldBox().isContained(getWorldBox()))
       {
          // Check that mesh size is appropriate.
@@ -937,13 +937,13 @@ DefineEngineMethod(AIPlayer, findNavMesh, S32, (),,
    "navigation type and other factors. Returns -1 if no NavMesh is "
    "found.")
 {
-   Nav::NavMesh *mesh = object->getNavMesh();
+   NavMesh *mesh = object->getNavMesh();
    return mesh ? mesh->getId() : -1;
 }
 
 void AIPlayer::updateNavMesh()
 {
-   Nav::NavMesh *old = mNavMesh;
+   NavMesh *old = mNavMesh;
    if(mNavMesh.isNull())
       mNavMesh = findNavMesh();
    else
@@ -961,7 +961,7 @@ void AIPlayer::updateNavMesh()
 DefineEngineMethod(AIPlayer, getNavMesh, S32, (),,
    "@brief Return the NavMesh this AIPlayer is using to navigate.\n\n")
 {
-   Nav::NavMesh *m = object->getNavMesh();
+   NavMesh *m = object->getNavMesh();
    return m ? m->getId() : 0;
 }
 

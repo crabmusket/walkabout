@@ -97,7 +97,7 @@ void GuiNavEditorCtrl::onSleep()
    //mMode = mSelectMode;
 }
 
-void GuiNavEditorCtrl::selectMesh(Nav::NavMesh *mesh)
+void GuiNavEditorCtrl::selectMesh(NavMesh *mesh)
 {
    mesh->setSelected(true);
    mMesh = mesh;
@@ -106,7 +106,7 @@ void GuiNavEditorCtrl::selectMesh(Nav::NavMesh *mesh)
 DefineEngineMethod(GuiNavEditorCtrl, selectMesh, void, (S32 id),,
    "@brief Select a NavMesh object.")
 {
-   Nav::NavMesh *obj;
+   NavMesh *obj;
    if(Sim::findObject(id, obj))
       object->selectMesh(obj);
 }
@@ -167,7 +167,7 @@ DefineEngineMethod(GuiNavEditorCtrl, deleteLink, void, (),,
    object->deleteLink();
 }
 
-void GuiNavEditorCtrl::setLinkFlags(const Nav::LinkData &d)
+void GuiNavEditorCtrl::setLinkFlags(const LinkData &d)
 {
    if(mMode == mLinkMode && !mMesh.isNull() && mLink != -1)
    {
@@ -178,7 +178,7 @@ void GuiNavEditorCtrl::setLinkFlags(const Nav::LinkData &d)
 DefineEngineMethod(GuiNavEditorCtrl, setLinkFlags, void, (U32 flags),,
    "@Brief Set jump and drop properties of the selected link.")
 {
-   object->setLinkFlags(Nav::LinkData(flags));
+   object->setLinkFlags(LinkData(flags));
 }
 
 void GuiNavEditorCtrl::buildTile()
@@ -305,7 +305,7 @@ void GuiNavEditorCtrl::on3DMouseDown(const Gui3DMouseEvent & event)
                mMesh->selectLink(mLink, false);
             mMesh->selectLink(link, true, false);
             mLink = link;
-            Nav::LinkData d = mMesh->getLinkFlags(mLink);
+            LinkData d = mMesh->getLinkFlags(mLink);
             Con::executef(this, "onLinkSelected", Con::getIntArg(d.getFlags()));
          }
          else
@@ -512,7 +512,7 @@ void GuiNavEditorCtrl::renderScene(const RectI & updateRect)
    Point3F camPos;
    mat.getColumn(3,&camPos);
 
-   Nav::duDebugDrawTorque dd;
+   duDebugDrawTorque dd;
 
    if(mMode == mLinkMode)
    {

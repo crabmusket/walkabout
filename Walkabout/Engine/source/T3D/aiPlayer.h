@@ -77,7 +77,7 @@ private:
    /// Stores information about a path.
    struct PathData {
       /// Pointer to path object.
-      SimObjectPtr<Nav::NavPath> path;
+      SimObjectPtr<NavPath> path;
       /// Do we own our path? If so, we will delete it when finished.
       bool owned;
       /// Path node we're at.
@@ -97,7 +97,7 @@ private:
    void clearPath();
 
    /// Get the current path we're following.
-   Nav::NavPath *getPath() { return mPathData.path; }
+   NavPath *getPath() { return mPathData.path; }
 
    /// Stores information about our cover.
    struct CoverData {
@@ -138,7 +138,7 @@ private:
    void clearFollow();
 
    /// NavMesh we pathfind on.
-   SimObjectPtr<Nav::NavMesh> mNavMesh;
+   SimObjectPtr<NavMesh> mNavMesh;
 
    /// Move to the specified node in the current path.
    void moveToNode(S32 node);
@@ -195,19 +195,19 @@ public:
    bool setPathDestination(const Point3F &pos);
    Point3F getPathDestination() const;
 
-   void followNavPath(Nav::NavPath *path);
+   void followNavPath(NavPath *path);
    void followObject(SceneObject *obj, F32 radius);
 
    void repath();
 
    bool findCover(const Point3F &from, F32 radius);
 
-   Nav::NavMesh *findNavMesh() const;
+   NavMesh *findNavMesh() const;
    void updateNavMesh();
-   Nav::NavMesh *getNavMesh() const { return mNavMesh; }
+   NavMesh *getNavMesh() const { return mNavMesh; }
 
    /// Types of link we can use.
-   Nav::LinkData mLinkTypes;
+   LinkData mLinkTypes;
 
    /// @}
 #endif // TORQUE_WALKABOUT_ENABLED
