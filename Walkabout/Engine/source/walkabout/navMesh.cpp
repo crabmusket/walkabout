@@ -7,7 +7,6 @@
 #include <stdio.h>
 
 #include "navMesh.h"
-#include "navMeshDraw.h"
 #include "navContext.h"
 #include "recast/DetourDebugDraw.h"
 #include "recast/RecastDebugDraw.h"
@@ -271,7 +270,11 @@ bool NavMesh::onAdd()
    addToScene();
 
    if(gEditingMission)
+   {
       mNetFlags.set(Ghostable);
+      if(isClientObject())
+         renderToDrawer();
+   }
 
    if(isServerObject())
    {
@@ -737,6 +740,7 @@ void NavMesh::buildNextTile()
          {
             String str = String::ToString("%d (%d, %d) %d %s", getId(), tile.x, tile.y, success, castConsoleTypeToString(tile.box));
             getEventManager()->postEvent("NavMeshTileUpdate", str.c_str());
+            setMaskBits(LoadFlag);
          }
       }
       // Did we just build the last tile?
@@ -748,6 +752,7 @@ void NavMesh::buildNextTile()
             String str = String::ToString("%d %.3fs", getId(), ctx->getAccumulatedTime(RC_TIMER_TOTAL) / 1000.0f);
             getEventManager()->postEvent("NavMeshBuildTime", str.c_str());
             getEventManager()->postEvent("NavMeshUpdate", getIdString());
+            setMaskBits(LoadFlag);
          }
          mBuilding = false;
       }
@@ -1212,6 +1217,27 @@ bool NavMesh::testEdgeCover(const Point3F &pos, const VectorF &dir, CoverPointDa
    return hits > 0;
 }
 
+void NavMesh::renderToDrawer()
+{
+   dd.clear();
+   // Recast debug draw
+   NetObject *no = getServerObject();
+   if(no)
+   {
+      NavMesh *n = static_cast<NavMesh*>(no);
+
+      if(n->nm)
+      {
+         dd.beginGroup(0);
+         duDebugDrawNavMesh       (&dd, *n->nm, 0);
+         dd.beginGroup(1);
+         duDebugDrawNavMeshPortals(&dd, *n->nm);
+         dd.beginGroup(2);
+         duDebugDrawNavMeshBVTree (&dd, *n->nm);
+      }
+   }
+}
+
 void NavMesh::prepRenderImage(SceneRenderState *state)
 {
    ObjectRenderInst *ri = state->getRenderPass()->allocInst<ObjectRenderInst>();
@@ -1231,9 +1257,8 @@ void NavMesh::render(ObjectRenderInst *ri, SceneRenderState *state, BaseMatInsta
       return;
 
    PROFILE_SCOPE(NavMesh_Render);
-
+   
    // Recast debug draw
-   duDebugDrawTorque dd;
    NetObject *no = getServerObject();
    if(no)
    {
@@ -1261,13 +1286,14 @@ void NavMesh::render(ObjectRenderInst *ri, SceneRenderState *state, BaseMatInsta
             alpha = 20;
          dd.overrideColor(duRGBA(255, 0, 0, alpha));
       }
-      if(n->nm)
+      else
       {
-         if(Con::getBoolVariable("$Editor::renderPortals")) duDebugDrawNavMeshPortals(&dd, *n->nm);
-         if(Con::getBoolVariable("$Editor::renderBVTree"))  duDebugDrawNavMeshBVTree (&dd, *n->nm);
-         if(Con::getBoolVariable("$Editor::renderMesh", 1)) duDebugDrawNavMesh       (&dd, *n->nm, 0);
+         dd.cancelOverride();
       }
-      dd.render();
+      
+      if(Con::getBoolVariable("$Nav::Editor::renderMesh", 1)) dd.renderGroup(0);
+      if(Con::getBoolVariable("$Nav::Editor::renderPortals")) dd.renderGroup(1);
+      if(Con::getBoolVariable("$Nav::Editor::renderBVTree"))  dd.renderGroup(2);
    }
 }
 
@@ -1341,6 +1367,8 @@ void NavMesh::unpackUpdate(NetConnection *conn, BitStream *stream)
    mathRead(*stream, &mObjScale);
 
    setTransform(mObjToWorld);
+
+   renderToDrawer();
 }
 
 static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';

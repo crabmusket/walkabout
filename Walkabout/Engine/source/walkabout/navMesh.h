@@ -15,6 +15,7 @@
 #include "util/messaging/eventManager.h"
 
 #include "nav.h"
+#include "navMeshDraw.h"
 #include "coverPoint.h"
 
 #include "recast/Recast.h"
@@ -365,6 +366,15 @@ private:
 
    /// A simple flag to say we are building.
    bool mBuilding;
+
+   /// @}
+
+   /// @name Rendering
+   /// @{
+
+   duDebugDrawTorque dd;
+
+   void renderToDrawer();
 
    /// @}
 
