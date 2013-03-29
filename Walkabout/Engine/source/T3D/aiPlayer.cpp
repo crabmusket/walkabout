@@ -683,6 +683,7 @@ bool AIPlayer::setPathDestination(const Point3F &pos)
       path->mFromSet = path->mToSet = true;
       path->mAlwaysRender = true;
       path->mLinkTypes = mLinkTypes;
+      path->mXray = true;
       // Paths plan automatically upon being registered.
       if(!path->registerObject())
       {

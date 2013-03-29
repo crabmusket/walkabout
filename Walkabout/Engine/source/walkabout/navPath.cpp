@@ -400,14 +400,14 @@ bool NavPath::visitNext()
    RayInfo info;
    if(getContainer()->castRay(start, start - Point3F(0, 0, mMesh->mWalkableHeight * 2.0f), StaticObjectType, &info))
       start = info.point;
-   if(getContainer()->castRay(end, end - Point3F(0, 0, mMesh->mWalkableHeight * 2.0f), StaticObjectType, &info))
+   if(getContainer()->castRay(end + Point3F(0, 0, 0.1f), end - Point3F(0, 0, mMesh->mWalkableHeight * 2.0f), StaticObjectType, &info))
       end = info.point;
 
    // Convert to Detour-friendly coordinates and data structures.
    F32 from[] = {start.x, start.z, -start.y};
    F32 to[] =   {end.x,   end.z,   -end.y};
    F32 extx = mMesh->mWalkableRadius * 4.0f;
-   F32 extz = mMesh->mWalkableHeight / 2.0f;
+   F32 extz = mMesh->mWalkableHeight;
    F32 extents[] = {extx, extz, extx};
    dtPolyRef startRef, endRef;
 
