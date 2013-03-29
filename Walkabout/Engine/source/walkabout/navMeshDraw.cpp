@@ -23,6 +23,7 @@ duDebugDrawTorque::duDebugDrawTorque()
 {
    mOverrideColor = 0;
    mOverride = false;
+   mGroup = 0;
 }
 
 duDebugDrawTorque::~duDebugDrawTorque()
@@ -57,8 +58,14 @@ void duDebugDrawTorque::begin(duDebugDrawPrimitives prim, float size)
                         mQuadsMode = true;           break;
    }
    mBuffers.push_back(Buffer(mPrimType));
+   mBuffers.last().group = mGroup;
    mDesc.setCullMode(GFXCullNone);
    mDesc.setBlend(true);
+}
+
+void duDebugDrawTorque::beginGroup(U32 group)
+{
+   mGroup = group;
 }
 
 /// Submit a vertex
@@ -151,6 +158,33 @@ void duDebugDrawTorque::cancelOverride()
    mOverride = false;
 }
 
+void duDebugDrawTorque::renderBuffer(Buffer &b)
+{
+   PrimBuild::begin(b.primType, b.buffer.size());
+   Vector<Vertex> &buf = b.buffer;
+   for(U32 i = 0; i < buf.size(); i++)
+   {
+      switch(buf[i].type)
+      {
+      case Vertex::POINT:
+         PrimBuild::vertex3f(buf[i].data.point.x,
+                              buf[i].data.point.y,
+                              buf[i].data.point.z);
+         break;
+
+      case Vertex::COLOR:
+         if(mOverride)
+            break;
+         PrimBuild::color4i(buf[i].data.color.r,
+                              buf[i].data.color.g,
+                              buf[i].data.color.b,
+                              buf[i].data.color.a);
+         break;
+      }
+   }
+   PrimBuild::end();
+}
+
 void duDebugDrawTorque::render()
 {
    GFXStateBlockRef sb = GFX->createStateBlock(mDesc);
@@ -164,29 +198,25 @@ void duDebugDrawTorque::render()
    }
    for(U32 b = 0; b < mBuffers.size(); b++)
    {
-      PrimBuild::begin(mBuffers[b].primType, mBuffers[b].buffer.size());
-      Vector<Vertex> &buf = mBuffers[b].buffer;
-      for(U32 i = 0; i < buf.size(); i++)
-      {
-         switch(buf[i].type)
-         {
-         case Vertex::POINT:
-            PrimBuild::vertex3f(buf[i].data.point.x,
-                                buf[i].data.point.y,
-                                buf[i].data.point.z);
-            break;
+      renderBuffer(mBuffers[b]);
+   }
+}
 
-         case Vertex::COLOR:
-            if(mOverride)
-               break;
-            PrimBuild::color4i(buf[i].data.color.r,
-                               buf[i].data.color.g,
-                               buf[i].data.color.b,
-                               buf[i].data.color.a);
-            break;
-         }
-      }
-      PrimBuild::end();
+void duDebugDrawTorque::renderGroup(U32 group)
+{
+   GFXStateBlockRef sb = GFX->createStateBlock(mDesc);
+   GFX->setStateBlock(sb);
+   // Use override color for all rendering.
+   if(mOverride)
+   {
+      U8 r, g, b, a;
+      rcCol(mOverrideColor, r, g, b, a);
+      PrimBuild::color4i(r, g, b, a);
+   }
+   for(U32 b = 0; b < mBuffers.size(); b++)
+   {
+      if(mBuffers[b].group == group)
+         renderBuffer(mBuffers[b]);
    }
 }
 

@@ -35,6 +35,9 @@ public:
    /// @param size [in] size of a primitive, applies to point size and line width only.
    void begin(duDebugDrawPrimitives prim, float size = 1.0f);
 
+   /// All new buffers go into this group.
+   void beginGroup(U32 group);
+
    /// Submit a vertex
    /// @param pos [in] position of the verts.
    /// @param color [in] color of the verts.
@@ -61,6 +64,9 @@ public:
    /// Render buffered primitive.
    void render();
 
+   /// Render buffered primitives in a group.
+   void renderGroup(U32 group);
+
    /// Delete buffered primitive.
    void clear();
       
@@ -72,6 +78,8 @@ private:
 
    U32 mVertCount;
    F32 mStore[2][3];
+
+   U32 mGroup;
 
    struct Vertex {
       // Contain either a point or a color command.
@@ -112,10 +120,12 @@ private:
    };
 
    struct Buffer {
+      U32 group;
       Vector<Vertex> buffer;
       GFXPrimitiveType primType;
       Buffer(U32 type = 0) {
          primType = (GFXPrimitiveType)type;
+         group = 0;
       }
    };
    Vector<Buffer> mBuffers;
@@ -125,6 +135,8 @@ private:
    bool mOverride;
 
    void _vertex(const float x, const float y, const float z, unsigned int color);
+
+   void renderBuffer(Buffer &b);
 };
 
 #endif
