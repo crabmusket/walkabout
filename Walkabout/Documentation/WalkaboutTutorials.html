@@ -14,6 +14,7 @@
 	<ul>
 		<li><a href="#basics">The Basics</a></li>
 		<li><a href="#breakables">Creating Breakable Objects</a></li>
+		<li><a href="#UAISK">UAISK integration</a></li>
 	</ul>
 	
 	<h1 id="basics">The Basics</h1>
@@ -160,5 +161,108 @@ function BreakableRock::onRemove(%this, %obj)
 	<p>Now that our scripts are complete, reload the level, place a few BreakableRocks, rebuild the NavMesh, and shoot them!
 	The NavMesh should automatically update to account for the missing geometry.
 	<a href="http://youtu.be/SOw8ZAwyCzg">This video</a> shows the desired outcome.</p>
+
+	<h1 id="UAISK">UAISK integration</h1>
+
+	<p><strong>Walkabout</strong> is a navigation solution, but chances are you want your characters to do more than go where you tell them without running into stuff!
+	The <a href="http://www.garagegames.com/products/ai-starter-kit">Universal AI Starter Kit</a> is one of the premier addons providing AI for Torque 3D.
+	This section will describe how to modify the UAISK to make full use of <strong>Walkabout</strong>'s navmeshes.</p>
+
+	<p>First, we'll add some global variables that control how <strong>Walkabout</strong> behaves as part of the UAISK.
+	In <span class="path">game/scripts/server/UAISK/aiGlobals.cs</span>, add the following to the bottom of the file:</p>
+
+<pre>
+//----------------------------------------------------------------
+//The values below are Walkabout-specific
+
+// Allow behaviors to make use of Walkabout navmeshes.
+$AISK_WALKABOUT_ENABLE = true;
+
+// Distance that characters should search for cover.
+$AISK_WALKABOUT_COVER_RADIUS = 20;
+</pre>
+
+	<p>Next, let's make moving AI units actually use our new pathfinding!
+	The UAISK routes most of its movement through the AIPlayer::movementPositionFilter function.
+	We're going to hijack part of this function to use <strong>Walkabout</strong> instead of the standard movement algorithm.
+	In <span class="path">game/scripts/server/UAISK/aiMovement.cs</span>, replace this block:</p>
+
+<pre>
+    //Do a simple test to see if the bot can go directly to its target destination,
+    //or if it needs to do something fancy to go around an obstacle
+    if (%this.checkMovementLos(%obj, %eyeTrans, %this.moveDestinationB) == 0)
+        %obj.setmovedestination(%this.moveDestinationB);
+</pre>
+
+	<p>With:</p>
+
+<pre>
+    if($AISK_WALKABOUT_ENABLE && %this.behavior.useWalkabout && isObject(%this.getNavMesh()))
+        // Use Walkabout pathfinding.
+        %this.setPathDestination(%this.moveDestinationB);
+    //Do a simple test to see if the bot can go directly to its target destination,
+    //or if it needs to do something fancy to go around an obstacle
+    else if (%this.checkMovementLos(%obj, %eyeTrans, %this.moveDestinationB) == 0)
+        %obj.setmovedestination(%this.moveDestinationB);
+</pre>
+
+	<p>Notice that you can specify which behaviours use <strong>Walkabout</strong> by setting the useWalkabout property.</p>
+
+	<p>Now, we'll add a bit of spice: allowing AIPlayers that have been damaged to take cover.
+	The Armor::damage function is called when AIPlayers are damaged.
+	Currently, the UAISK uses this callback to do things like maki aggressive AIs respond to being shot at.
+	In <span class="path">game/scripts/server/player.cs</span>, replace the following block:</p>
+
+<pre>
+        //Move a little when hit, aggressive bots move in the "Defending" state
+        if (!%obj.behavior.isAggressive)
+            %obj.sidestep(%obj, true);
+</pre>
+
+	<p>With:</p>
+
+<pre>
+        //Move a little when hit, aggressive bots move in the "Defending" state
+        if (!%obj.behavior.isAggressive)
+        {
+            if($AISK_WALKABOUT_ENABLE && %this.behavior.useWalkabout && %this.behavior.useCover && isObject(%this.getNavMesh()))
+            {
+                // Try to take cover. If that fails, just sidestep!
+                if(!%this.findCover(%sourceObject.getPosition(), $AISK_WALKABOUT_COVER_RADIUS))
+                    %this.sidestep(%this, true);
+            }
+            else
+                %obj.sidestep(%obj, true);
+        }
+</pre>
+
+	<p>Next, we'll modify bots' pathed movement.
+	We're going to make bots find a <strong>Walkabout</strong> path between each UAISK path node they travel through.
+	This will allow you to use paths as 'waypoints', instead of having to place a path node at every corner.
+	For example, you could put one path node inside a building, the next up a hill, and the final one on a bridge, and bots will find proper paths between these points.
+	If your level geometry changes or you decide to move your path nodes around, the bots will still find correct paths!</p>
+
+	<p>In <span class="path">game/scripts/server/UAISK/aiPathed.cs</span>, replace this:</p>
+
+<pre>
+    //The 0 at the end sets if the bot should slow down or not, you can change it if needed
+    %obj.setMoveDestination(%node.getPosition(), 0);
+</pre>
+
+	<p>With:</p>
+
+<pre>
+    if($AISK_WALKABOUT_ENABLE && %this.behavior.useWalkabout && isObject(%this.getNavMesh()))
+        %this.setPathDestination(%node.getPosition());
+    else
+        //The 0 at the end sets if the bot should slow down or not, you can change it if needed
+        %obj.setMoveDestination(%node.getPosition(), 0);
+</pre>
+
+	<p>Finally, we need to set the useWalkabout and useCover properties on behaviours that you want to use pathfinding.
+	The behaviours are in <span class="path">game/scripts/server/UAISK/aiBehavoirs.cs</span>.
+	I recommend setting useWalkabout to true for the Chase behaviour, and useWalkabout and useCover to true for the KillableNPC behaviour.</p>
+	<p>All done! Now, if you start up your game using the UAISK, you should see your characters using navmeshes and taking cover.</p>
+
 </body>
 </html>
