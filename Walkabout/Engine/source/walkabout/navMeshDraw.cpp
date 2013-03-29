@@ -130,7 +130,7 @@ void duDebugDrawTorque::_vertex(const float x, const float y, const float z, uns
    // Use override color if we must.
    //if(mOverride)
       //color = mOverrideColor;
-   if(mCurrColor != color)
+   if(mCurrColor != color || !mBuffers.last().buffer.size())
    {
       U8 r, g, b, a;
       // Convert color integer to components.
