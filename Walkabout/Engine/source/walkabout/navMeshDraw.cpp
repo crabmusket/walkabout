@@ -135,11 +135,11 @@ void duDebugDrawTorque::_vertex(const float x, const float y, const float z, uns
       U8 r, g, b, a;
       // Convert color integer to components.
       rcCol(color, r, g, b, a);
-      mBuffers.last().buffer.push_back(Vertex(r, g, b, a));
+      mBuffers.last().buffer.push_back(Instruction(r, g, b, a));
       mCurrColor = color;
    }
    // Construct vertex data.
-   mBuffers.last().buffer.push_back(Vertex(x, y, z));
+   mBuffers.last().buffer.push_back(Instruction(x, y, z));
 }
 
 /// End drawing primitives.
@@ -161,24 +161,24 @@ void duDebugDrawTorque::cancelOverride()
 void duDebugDrawTorque::renderBuffer(Buffer &b)
 {
    PrimBuild::begin(b.primType, b.buffer.size());
-   Vector<Vertex> &buf = b.buffer;
+   Vector<Instruction> &buf = b.buffer;
    for(U32 i = 0; i < buf.size(); i++)
    {
       switch(buf[i].type)
       {
-      case Vertex::POINT:
+      case Instruction::POINT:
          PrimBuild::vertex3f(buf[i].data.point.x,
-                              buf[i].data.point.y,
-                              buf[i].data.point.z);
+                             buf[i].data.point.y,
+                             buf[i].data.point.z);
          break;
 
-      case Vertex::COLOR:
+      case Instruction::COLOR:
          if(mOverride)
             break;
          PrimBuild::color4i(buf[i].data.color.r,
-                              buf[i].data.color.g,
-                              buf[i].data.color.b,
-                              buf[i].data.color.a);
+                            buf[i].data.color.g,
+                            buf[i].data.color.b,
+                            buf[i].data.color.a);
          break;
       }
    }

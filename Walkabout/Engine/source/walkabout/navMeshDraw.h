@@ -81,7 +81,7 @@ private:
 
    U32 mGroup;
 
-   struct Vertex {
+   struct Instruction {
       // Contain either a point or a color command.
       union {
          struct {
@@ -99,7 +99,7 @@ private:
          PRIMTYPE,
       } type;
       // Construct as color instruction.
-      Vertex(U8 r, U8 g, U8 b, U8 a) {
+      Instruction(U8 r, U8 g, U8 b, U8 a) {
          type = COLOR;
          data.color.r = r;
          data.color.g = g;
@@ -107,13 +107,13 @@ private:
          data.color.a = a;
       }
       // Construct as point.
-      Vertex(float x, float y, float z) {
+      Instruction(float x, float y, float z) {
          type = POINT;
          data.point.x = x;
          data.point.y = y;
          data.point.z = z;
       }
-      Vertex(U32 t = 0) {
+      Instruction(U32 t = 0) {
          type = PRIMTYPE;
          data.primType = t;
       }
@@ -121,7 +121,7 @@ private:
 
    struct Buffer {
       U32 group;
-      Vector<Vertex> buffer;
+      Vector<Instruction> buffer;
       GFXPrimitiveType primType;
       Buffer(U32 type = 0) {
          primType = (GFXPrimitiveType)type;
