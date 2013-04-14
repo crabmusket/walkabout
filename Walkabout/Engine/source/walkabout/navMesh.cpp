@@ -1282,7 +1282,7 @@ void NavMesh::render(ObjectRenderInst *ri, SceneRenderState *state, BaseMatInsta
       if(build)
       {
          int alpha = 80;
-         if(!n->isSelected() || !Con::getBoolVariable("$EditorOpen"))
+         if(!n->isSelected() || !Con::getBoolVariable("$Nav::EditorOpen"))
             alpha = 20;
          dd.overrideColor(duRGBA(255, 0, 0, alpha));
       }
@@ -1333,9 +1333,9 @@ void NavMesh::renderTileData(duDebugDraw &dd, U32 tile)
 {
    if(tile >= mTileData.size())
       return;
-   if(mTileData[tile].hf && Con::getBoolVariable("$Editor::renderVoxels", false))
+   if(mTileData[tile].hf && Con::getBoolVariable("$Nav::Editor::renderVoxels", false))
       duDebugDrawHeightfieldWalkable(&dd, *mTileData[tile].hf);
-   if(Con::getBoolVariable("$Editor::renderInput", false))
+   if(Con::getBoolVariable("$Nav::Editor::renderInput", false))
       mTileData[tile].geom.renderWire();
 }
 

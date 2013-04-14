@@ -546,6 +546,8 @@ void GuiNavEditorCtrl::renderScene(const RectI & updateRect)
    if(!mMesh.isNull())
       mMesh->renderLinks(dd);
 
+   dd.render();
+
    // Now draw all the 2d stuff!
    GFX->setClipRect(updateRect);
 }
