@@ -743,6 +743,10 @@ void NavMesh::buildNextTile()
             setMaskBits(LoadFlag);
          }
       }
+      if(!mSaveIntermediates)
+      {
+         tdata.freeAll();
+      }
       // Did we just build the last tile?
       if(!mDirtyTiles.size())
       {
@@ -767,9 +771,6 @@ static void buildCallback(SceneObject* object,void *key)
 
 unsigned char *NavMesh::buildTileData(const Tile &tile, TileData &data, U32 &dataSize)
 {
-   // Free all data that may be hanging around from last build.
-   data.freeAll();
-
    // Push out tile boundaries a bit.
    F32 tileBmin[3], tileBmax[3];
    rcVcopy(tileBmin, tile.bmin);
