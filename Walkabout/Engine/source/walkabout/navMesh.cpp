@@ -740,10 +740,6 @@ void NavMesh::buildNextTile()
             setMaskBits(LoadFlag);
          }
       }
-      if(!mSaveIntermediates)
-      {
-         tdata.freeAll();
-      }
       // Did we just build the last tile?
       if(!mDirtyTiles.size())
       {

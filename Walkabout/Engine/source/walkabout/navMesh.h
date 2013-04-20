@@ -283,6 +283,10 @@ private:
          rcFreePolyMesh(pm);
          rcFreePolyMeshDetail(pmd);
       }
+      ~TileData()
+      {
+         freeAll();
+      }
    };
 
    /// List of tiles.
