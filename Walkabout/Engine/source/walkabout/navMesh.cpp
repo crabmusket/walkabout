@@ -64,7 +64,6 @@ EventManager *NavMesh::getEventManager()
       smEventManager->registerEvent("NavMeshRemoved");
       smEventManager->registerEvent("NavMeshStartUpdate");
       smEventManager->registerEvent("NavMeshUpdate");
-      smEventManager->registerEvent("NavMeshBuildTime");
       smEventManager->registerEvent("NavMeshTileUpdate");
       smEventManager->registerEvent("NavMeshUpdateBox");
       smEventManager->registerEvent("NavMeshObstacleAdded");
@@ -729,13 +728,17 @@ void NavMesh::buildNextTile()
          if(dtStatusFailed(status))
          {
             success = 0;
-            //Con::errorf("Failed to add tile (%d, %d) to dtNavMesh for NavMesh %s",
-               //tile.x, tile.y, getIdString());
             dtFree(data);
          }
          if(getEventManager())
          {
-            String str = String::ToString("%d (%d, %d) %d %s", getId(), tile.x, tile.y, success, castConsoleTypeToString(tile.box));
+            String str = String::ToString("%d %d %d (%d, %d) %d %.3f %s",
+               getId(),
+               i, mTiles.size(),
+               tile.x, tile.y,
+               success,
+               ctx->getAccumulatedTime(RC_TIMER_TOTAL) / 1000.0f,
+               castConsoleTypeToString(tile.box));
             getEventManager()->postEvent("NavMeshTileUpdate", str.c_str());
             setMaskBits(LoadFlag);
          }
@@ -746,9 +749,8 @@ void NavMesh::buildNextTile()
          ctx->stopTimer(RC_TIMER_TOTAL);
          if(getEventManager())
          {
-            String str = String::ToString("%d %.3fs", getId(), ctx->getAccumulatedTime(RC_TIMER_TOTAL) / 1000.0f);
-            getEventManager()->postEvent("NavMeshBuildTime", str.c_str());
-            getEventManager()->postEvent("NavMeshUpdate", getIdString());
+            String str = String::ToString("%d %.3f", getId(), ctx->getAccumulatedTime(RC_TIMER_TOTAL) / 1000.0f);
+            getEventManager()->postEvent("NavMeshUpdate", str.c_str());
             setMaskBits(LoadFlag);
          }
          mBuilding = false;

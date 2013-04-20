@@ -8,6 +8,7 @@ $Nav::Editor::renderPortals = false;
 $Nav::Editor::renderBVTree = false;
 $Nav::Editor::backgroundBuild = true;
 $Nav::Editor::saveIntermediates = false;
+$Nav::Editor::playSoundWhenDone = false;
 
 function NavEditorGui::onEditorActivated(%this)
 {
