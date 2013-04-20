@@ -485,7 +485,6 @@ new SimGroup(MissionGroup) {
       minRegionArea = "8";
       mergeRegionArea = "20";
       tileSize = "11";
-      maxTiles = "128";
       maxPolysPerTile = "128";
       position = "0 0 3.5";
       rotation = "1 0 0 0";
