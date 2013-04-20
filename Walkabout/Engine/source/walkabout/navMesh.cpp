@@ -143,7 +143,6 @@ NavMesh::NavMesh()
    mMinRegionArea = 8;
    mMergeRegionArea = 20;
    mTileSize = 10.0f;
-   mMaxTiles = 128;
    mMaxPolysPerTile = 128;
 
    mSmallCharacters = false;
@@ -248,8 +247,6 @@ void NavMesh::initPersistFields()
       "Any regions with a span count smaller than this value will, if possible, be merged with larger regions.");
    addFieldV("tileSize", TypeF32, Offset(mTileSize, NavMesh), &CommonValidators::PositiveNonZeroFloat,
       "The horizontal size of tiles.");
-   addFieldV("maxTiles", TypeS32, Offset(mMaxTiles, NavMesh), &NaturalNumber,
-      "The maximum number of tiles allowed in the mesh.");
    addFieldV("maxPolysPerTile", TypeS32, Offset(mMaxPolysPerTile, NavMesh), &NaturalNumber,
       "The maximum number of polygons allowed in a tile.");
 
@@ -549,7 +546,7 @@ bool NavMesh::build(bool background, bool saveIntermediates)
    rcVcopy(params.orig, cfg.bmin);
    params.tileWidth = cfg.tileSize * mCellSize;
    params.tileHeight = cfg.tileSize * mCellSize;
-   params.maxTiles = mMaxTiles;
+   params.maxTiles = mCeil(getWorldBox().len_x() / params.tileWidth) * mCeil(getWorldBox().len_y() / params.tileHeight);
    params.maxPolys = mMaxPolysPerTile;
 
    // Initialise our navmesh.

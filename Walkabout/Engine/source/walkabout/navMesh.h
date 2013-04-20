@@ -85,7 +85,6 @@ public:
    U32 mMinRegionArea;
    U32 mMergeRegionArea;
    F32 mTileSize;
-   U32 mMaxTiles;
    U32 mMaxPolysPerTile;
    /// @}
 
