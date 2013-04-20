@@ -36,16 +36,18 @@ void NavContext::doResetTimers()
 void NavContext::doStartTimer(const rcTimerLabel label)
 {
    // Store starting time.
-   mTimers[label][0] = Sim::getCurrentTime();
+   mTimers[label][0] = Platform::getRealMilliseconds();
 }
 
 void NavContext::doStopTimer(const rcTimerLabel label)
 {
    // Compute final time based on starting time.
-   mTimers[label][1] = Sim::getCurrentTime() - mTimers[label][0];
+   mTimers[label][1] = Platform::getRealMilliseconds() - mTimers[label][0];
 }
 
 int NavContext::doGetAccumulatedTime(const rcTimerLabel label) const
 {
-   return mTimers[label][1];
+   return mTimers[label][1] == -1
+      ? Platform::getRealMilliseconds() - mTimers[label][0]
+      : mTimers[label][1];
 }
