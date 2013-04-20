@@ -281,7 +281,7 @@ function MissionBoundsExtents(%group)
       // Skip LevelInfos. Need a way to detect other non-SceneObjects.
       // Also skip GroundPlanes. They're too big.
       %cls = %obj.getClassName();
-      if(%cls $= "LevelInfo" || %cls $= "GroundPlane")
+      if(%cls $= "LevelInfo" || %cls $= "GroundPlane" || %cls $= "GroundCover")
          continue;
 
       // Get world box - might have to recurse into nested SimGroups.
@@ -339,8 +339,6 @@ function CreateNewNavMeshDlg::create(%this)
       {
          position = %pos;
          scale = %scale;
-         // Calculate maximum tile count given scale. Ties to an initial tile size of 10!
-         maxTiles = mCeil(GetWord(%scale, 0) * 2 / 10) * mCeil(GetWord(%scale, 1) * 2 / 10);
       };
    }
    else
