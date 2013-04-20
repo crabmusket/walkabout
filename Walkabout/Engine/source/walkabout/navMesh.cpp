@@ -1269,13 +1269,14 @@ void NavMesh::render(ObjectRenderInst *ri, SceneRenderState *state, BaseMatInsta
          desc.setBlend(true);
          desc.setCullMode(GFXCullNone);
 
-         drawer->drawCube(desc, getWorldBox(), ColorI(136, 228, 255, 45));
+         drawer->drawCube(desc, getWorldBox(), n->mBuilding
+            ? ColorI(255, 0, 0, 80)
+            : ColorI(136, 228, 255, 45));
          desc.setFillModeWireframe();
          drawer->drawCube(desc, getWorldBox(), ColorI::BLACK);
       }
 
-      bool build = n->mBuilding;
-      if(build)
+      if(n->mBuilding)
       {
          int alpha = 80;
          if(!n->isSelected() || !Con::getBoolVariable("$Nav::EditorOpen"))
