@@ -503,7 +503,7 @@ bool AIPlayer::getAIMove(Move *movePtr)
       // if it hit something.
       RayInfo dummy;
       if (getContainer()->castRay( location, targetLoc,
-            InteriorObjectType | StaticShapeObjectType | StaticObjectType |
+            StaticShapeObjectType | StaticObjectType |
             TerrainObjectType, &dummy)) {
          if (mTargetInLOS) {
             throwCallback( "onTargetExitLOS" );
@@ -1024,6 +1024,16 @@ DefineEngineMethod( AIPlayer, setMoveSpeed, void, ( F32 speed ),,
    "@see getMoveDestination()\n")
 {
 	object->setMoveSpeed(speed);
+}
+
+DefineEngineMethod( AIPlayer, getMoveSpeed, F32, ( ),,
+   "@brief Gets the move speed of an AI object.\n\n"
+
+   "@return A speed multiplier between 0.0 and 1.0.\n\n"
+
+   "@see setMoveSpeed()\n")
+{
+   return object->getMoveSpeed();
 }
 
 DefineEngineMethod( AIPlayer, setMoveDestination, void, ( Point3F goal, bool slowDown ), ( true ),
