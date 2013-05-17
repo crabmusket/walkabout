@@ -205,6 +205,8 @@ public:
    void renderLinks(duDebugDraw &dd);
    void renderTileData(duDebugDraw &dd, U32 tile);
 
+   bool mAlwaysRender;
+
    /// @}
 
    NavMesh();
@@ -363,6 +365,9 @@ private:
 
    /// Used to perform non-standard validation. detailSampleDist can be 0, or >= 0.9.
    static bool setProtectedDetailSampleDist(void *obj, const char *index, const char *data);
+
+   /// Updates the client when we check the alwaysRender option.
+   static bool setProtectedAlwaysRender(void *obj, const char *index, const char *data);
 
    /// @name Threaded updates
    /// @{

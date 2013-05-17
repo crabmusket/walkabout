@@ -120,7 +120,7 @@ DefineConsoleFunction(WalkaboutUpdateMesh, void, (S32 meshid, S32 objid, bool re
 
 NavMesh::NavMesh()
 {
-   mTypeMask |= MarkerObjectType;
+   mTypeMask |= StaticShapeObjectType | MarkerObjectType;
    mFileName = StringTable->insert("");
    mNetFlags.clear(Ghostable);
 
@@ -154,6 +154,8 @@ NavMesh::NavMesh()
    mCoverDist = 1.0f;
    mPeekDist = 0.7f;
 
+   mAlwaysRender = false;
+
    mBuilding = false;
 }
 
@@ -174,6 +176,25 @@ bool NavMesh::setProtectedDetailSampleDist(void *obj, const char *index, const c
    return false;
 }
 
+bool NavMesh::setProtectedAlwaysRender(void *obj, const char *index, const char *data)
+{
+   NavMesh *mesh = static_cast<NavMesh*>(obj);
+   bool always = dAtob(data);
+   if(always)
+   {
+      if(!gEditingMission)
+         mesh->mNetFlags.set(Ghostable);
+   }
+   else
+   {
+      if(!gEditingMission)
+         mesh->mNetFlags.clear(Ghostable);
+   }
+   mesh->mAlwaysRender = always;
+   mesh->setMaskBits(LoadFlag);
+   return true;
+}
+
 FRangeValidator ValidCellSize(0.01f, 10.0f);
 FRangeValidator ValidSlopeAngle(0.0f, 89.9f);
 IRangeValidator PositiveInt(0, S32_MAX);
@@ -191,6 +212,8 @@ void NavMesh::initPersistFields()
       "Length/width of a voxel.");
    addFieldV("cellHeight", TypeF32, Offset(mCellHeight, NavMesh), &ValidCellSize,
       "Height of a voxel.");
+   addFieldV("tileSize", TypeF32, Offset(mTileSize, NavMesh), &CommonValidators::PositiveNonZeroFloat,
+      "The horizontal size of tiles.");
 
    addFieldV("actorHeight", TypeF32, Offset(mWalkableHeight, NavMesh), &CommonValidators::PositiveFloat,
       "Height of an actor.");
@@ -227,6 +250,14 @@ void NavMesh::initPersistFields()
 
    endGroup("NavMesh Annotations");
 
+   addGroup("NavMesh Rendering");
+
+   addProtectedField("alwaysRender", TypeBool, Offset(mAlwaysRender, NavMesh),
+      &setProtectedAlwaysRender, &defaultProtectedGetFn,
+      "Display this NavMesh even outside the editor.");
+
+   endGroup("NavMesh Rendering");
+
    addGroup("NavMesh Advanced Options");
 
    addFieldV("borderSize", TypeS32, Offset(mBorderSize, NavMesh), &PositiveInt,
@@ -244,8 +275,6 @@ void NavMesh::initPersistFields()
       "The minimum number of cells allowed to form isolated island areas.");
    addFieldV("mergeRegionArea", TypeS32, Offset(mMergeRegionArea, NavMesh), &PositiveInt,
       "Any regions with a span count smaller than this value will, if possible, be merged with larger regions.");
-   addFieldV("tileSize", TypeF32, Offset(mTileSize, NavMesh), &CommonValidators::PositiveNonZeroFloat,
-      "The horizontal size of tiles.");
    addFieldV("maxPolysPerTile", TypeS32, Offset(mMaxPolysPerTile, NavMesh), &NaturalNumber,
       "The maximum number of polygons allowed in a tile.");
 
@@ -265,7 +294,7 @@ bool NavMesh::onAdd()
 
    addToScene();
 
-   if(gEditingMission)
+   if(gEditingMission || mAlwaysRender)
    {
       mNetFlags.set(Ghostable);
       if(isClientObject())
@@ -1238,7 +1267,7 @@ void NavMesh::prepRenderImage(SceneRenderState *state)
 {
    ObjectRenderInst *ri = state->getRenderPass()->allocInst<ObjectRenderInst>();
    ri->renderDelegate.bind(this, &NavMesh::render);
-   ri->type = RenderPassManager::RIT_Editor;      
+   ri->type = RenderPassManager::RIT_Object;
    ri->translucentSort = true;
    ri->defaultKey = 1;
    state->getRenderPass()->addInst(ri);
@@ -1288,7 +1317,7 @@ void NavMesh::render(ObjectRenderInst *ri, SceneRenderState *state, BaseMatInsta
          dd.cancelOverride();
       }
       
-      if(Con::getBoolVariable("$Nav::Editor::renderMesh", 1)) dd.renderGroup(0);
+      if(n->mAlwaysRender || Con::getBoolVariable("$Nav::Editor::renderMesh", 1)) dd.renderGroup(0);
       if(Con::getBoolVariable("$Nav::Editor::renderPortals")) dd.renderGroup(1);
       if(Con::getBoolVariable("$Nav::Editor::renderBVTree"))  dd.renderGroup(2);
    }
@@ -1339,11 +1368,18 @@ void NavMesh::renderTileData(duDebugDraw &dd, U32 tile)
 void NavMesh::onEditorEnable()
 {
    mNetFlags.set(Ghostable);
+   if(isClientObject() && !mAlwaysRender)
+      addToScene();
 }
 
 void NavMesh::onEditorDisable()
 {
-   mNetFlags.clear(Ghostable);
+   if(!mAlwaysRender)
+   {
+      mNetFlags.clear(Ghostable);
+      if(isClientObject())
+         removeFromScene();
+   }
 }
 
 U32 NavMesh::packUpdate(NetConnection *conn, U32 mask, BitStream *stream)
@@ -1352,6 +1388,7 @@ U32 NavMesh::packUpdate(NetConnection *conn, U32 mask, BitStream *stream)
 
    mathWrite(*stream, getTransform());
    mathWrite(*stream, getScale());
+   stream->writeFlag(mAlwaysRender);
 
    return retMask;
 }
@@ -1362,6 +1399,7 @@ void NavMesh::unpackUpdate(NetConnection *conn, BitStream *stream)
 
    mathRead(*stream, &mObjToWorld);
    mathRead(*stream, &mObjScale);
+   mAlwaysRender = stream->readFlag();
 
    setTransform(mObjToWorld);
 
