@@ -304,8 +304,9 @@ bool NavMesh::onAdd()
    if(isServerObject())
    {
 #ifdef WALKABOUT_DEMO
-      if(getServerSet()->size() >= 2)
+      if(getServerSet()->size() >= 1)
       {
+         Con::errorf("Sorry, the demo binary only allows one NavMesh to exist at a time.");
          Con::executef("OnWalkaboutDemoLimit");
          return false;
       }
@@ -1514,6 +1515,7 @@ DefineEngineMethod(NavMesh, load, bool, (),,
 bool NavMesh::save()
 {
 #ifdef WALKABOUT_DEMO
+   Con::errorf("Sorry, this demo code doesn't allow you to save NavMeshes to files.");
    Con::executef("OnWalkaboutDemoSave");
    return false;
 #else
