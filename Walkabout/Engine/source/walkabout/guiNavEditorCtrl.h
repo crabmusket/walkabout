@@ -132,6 +132,8 @@ protected:
    S32 mCurTile;
    S32 mTile;
 
+   duDebugDrawTorque dd;
+
    /// @}
 
    /// @name Test mode

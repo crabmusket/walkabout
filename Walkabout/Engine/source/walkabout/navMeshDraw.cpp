@@ -33,7 +33,7 @@ duDebugDrawTorque::~duDebugDrawTorque()
 
 void duDebugDrawTorque::depthMask(bool state)
 {
-   mDesc.setZReadWrite(true, state);
+   mDesc.setZReadWrite(state, state);
 }
 
 void duDebugDrawTorque::texture(bool state)

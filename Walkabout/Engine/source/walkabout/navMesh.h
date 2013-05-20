@@ -203,7 +203,7 @@ public:
    void prepRenderImage(SceneRenderState *state);
    void render(ObjectRenderInst *ri, SceneRenderState *state, BaseMatInstance *overrideMat);
    void renderLinks(duDebugDraw &dd);
-   void renderTileData(duDebugDraw &dd, U32 tile);
+   void renderTileData(duDebugDrawTorque &dd, U32 tile);
 
    bool mAlwaysRender;
 

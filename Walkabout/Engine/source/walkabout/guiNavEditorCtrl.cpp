@@ -344,6 +344,8 @@ void GuiNavEditorCtrl::on3DMouseDown(const Gui3DMouseEvent & event)
       if(gServerContainer.castRay(startPnt, endPnt, StaticShapeObjectType, &ri))
       {
          mTile = mMesh->getTile(ri.point);
+         dd.clear();
+         mMesh->renderTileData(dd, mTile);
       }
    }
 
@@ -512,8 +514,6 @@ void GuiNavEditorCtrl::renderScene(const RectI & updateRect)
    Point3F camPos;
    mat.getColumn(3,&camPos);
 
-   duDebugDrawTorque dd;
-
    if(mMode == mLinkMode)
    {
       if(mLinkStart != Point3F::Max)
@@ -532,7 +532,13 @@ void GuiNavEditorCtrl::renderScene(const RectI & updateRect)
    {
       renderBoxOutline(mMesh->getTileBox(mCurTile), ColorI::BLUE);
       renderBoxOutline(mMesh->getTileBox(mTile), ColorI::GREEN);
-      mMesh->renderTileData(dd, mTile);
+      if(Con::getBoolVariable("$Nav::Editor::renderVoxels", false)) dd.renderGroup(0);
+      if(Con::getBoolVariable("$Nav::Editor::renderInput", false))
+      {
+         dd.depthMask(false);
+         dd.renderGroup(1);
+         dd.depthMask(true);
+      }
    }
 
    if(mMode == mTestMode)
@@ -543,10 +549,10 @@ void GuiNavEditorCtrl::renderScene(const RectI & updateRect)
          renderBoxOutline(mPlayer->getWorldBox(), ColorI::GREEN);
    }
 
+   duDebugDrawTorque d;
    if(!mMesh.isNull())
-      mMesh->renderLinks(dd);
-
-   dd.render();
+      mMesh->renderLinks(d);
+   d.render();
 
    // Now draw all the 2d stuff!
    GFX->setClipRect(updateRect);

@@ -1356,14 +1356,32 @@ void NavMesh::renderLinks(duDebugDraw &dd)
    dd.depthMask(true);
 }
 
-void NavMesh::renderTileData(duDebugDraw &dd, U32 tile)
+void NavMesh::renderTileData(duDebugDrawTorque &dd, U32 tile)
 {
    if(tile >= mTileData.size())
       return;
-   if(mTileData[tile].hf && Con::getBoolVariable("$Nav::Editor::renderVoxels", false))
-      duDebugDrawHeightfieldWalkable(&dd, *mTileData[tile].hf);
-   if(Con::getBoolVariable("$Nav::Editor::renderInput", false))
-      mTileData[tile].geom.renderWire();
+   if(nm)
+   {
+      dd.beginGroup(0);
+      if(mTileData[tile].chf) duDebugDrawCompactHeightfieldSolid(&dd, *mTileData[tile].chf);
+
+      dd.beginGroup(1);
+      int col = duRGBA(255, 0, 255, 255);
+      ObjPolyList &in = mTileData[tile].geom;
+      dd.begin(DU_DRAW_LINES);
+      const F32 *verts = in.getVerts();
+      const S32 *tris = in.getTris();
+      for(U32 t = 0; t < in.getTriCount(); t++)
+      {
+         dd.vertex(&verts[tris[t*3]*3], col);
+         dd.vertex(&verts[tris[t*3+1]*3], col);
+         dd.vertex(&verts[tris[t*3+1]*3], col);
+         dd.vertex(&verts[tris[t*3+2]*3], col);
+         dd.vertex(&verts[tris[t*3+2]*3], col);
+         dd.vertex(&verts[tris[t*3]*3], col);
+      }
+      dd.end();
+   }
 }
 
 void NavMesh::onEditorEnable()
