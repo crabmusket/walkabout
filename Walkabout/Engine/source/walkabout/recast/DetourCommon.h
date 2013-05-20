@@ -376,6 +376,10 @@ bool dtIntersectSegmentPoly2D(const float* p0, const float* p1,
 							  float& tmin, float& tmax,
 							  int& segMin, int& segMax);
 
+bool dtIntersectSegSeg2D(const float* ap, const float* aq,
+						 const float* bp, const float* bq,
+						 float& s, float& t);
+
 /// Determines if the specified point is inside the convex polygon on the xz-plane.
 ///  @param[in]		pt		The point to check. [(x, y, z)]
 ///  @param[in]		verts	The polygon vertices. [(x, y, z) * @p nverts]
@@ -472,6 +476,9 @@ inline void dtSwapEndian(float* v)
 	unsigned char* x = (unsigned char*)v;
 	dtSwapByte(x+0, x+3); dtSwapByte(x+1, x+2);
 }
+
+void dtRandomPointInConvexPoly(const float* pts, const int npts, float* areas,
+							   const float s, const float t, float* out);
 
 /// @}
 

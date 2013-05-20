@@ -158,11 +158,12 @@ public:
 	///  @param[out]	straightPathRefs	The reference id of the polygon that is being entered at each point. [opt]
 	///  @param[out]	straightPathCount	The number of points in the straight path.
 	///  @param[in]		maxStraightPath		The maximum number of points the straight path arrays can hold.  [Limit: > 0]
+	///  @param[in]		options				Query options. (see: #dtStraightPathOptions)
 	/// @returns The status flags for the query.
 	dtStatus findStraightPath(const float* startPos, const float* endPos,
 							  const dtPolyRef* path, const int pathSize,
 							  float* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
-							  int* straightPathCount, const int maxStraightPath) const;
+							  int* straightPathCount, const int maxStraightPath, const int options = 0) const;
 
 	///@}
 	/// @name Sliced Pathfinding Functions
@@ -348,6 +349,30 @@ public:
 	dtStatus getPolyWallSegments(dtPolyRef ref, const dtQueryFilter* filter,
 								 float* segmentVerts, dtPolyRef* segmentRefs, int* segmentCount,
 								 const int maxSegments) const;
+
+	/// Returns random location on navmesh.
+	/// Polygons are chosen weighted by area. The search runs in linear related to number of polygon.
+	///  @param[in]		filter			The polygon filter to apply to the query.
+	///  @param[in]		frand			Function returning a random number [0..1).
+	///  @param[out]	randomRef		The reference id of the random location.
+	///  @param[out]	randomPt		The random location. 
+	/// @returns The status flags for the query.
+	dtStatus findRandomPoint(const dtQueryFilter* filter, float (*frand)(),
+							 dtPolyRef* randomRef, float* randomPt) const;
+
+	/// Returns random location on navmesh within the reach of specified location.
+	/// Polygons are chosen weighted by area. The search runs in linear related to number of polygon.
+	/// The location is not exactly constrained by the circle, but it limits the visited polygons.
+	///  @param[in]		startRef		The reference id of the polygon where the search starts.
+	///  @param[in]		centerPos		The center of the search circle. [(x, y, z)]
+	///  @param[in]		filter			The polygon filter to apply to the query.
+	///  @param[in]		frand			Function returning a random number [0..1).
+	///  @param[out]	randomRef		The reference id of the random location.
+	///  @param[out]	randomPt		The random location. [(x, y, z)]
+	/// @returns The status flags for the query.
+	dtStatus findRandomPointAroundCircle(dtPolyRef startRef, const float* centerPos, const float maxRadius,
+										 const dtQueryFilter* filter, float (*frand)(),
+										 dtPolyRef* randomRef, float* randomPt) const;
 	
 	/// Finds the closest point on the specified polygon.
 	///  @param[in]		ref			The reference id of the polygon.
@@ -421,6 +446,16 @@ private:
 	dtStatus getEdgeMidPoint(dtPolyRef from, const dtPoly* fromPoly, const dtMeshTile* fromTile,
 							 dtPolyRef to, const dtPoly* toPoly, const dtMeshTile* toTile,
 							 float* mid) const;
+	
+	// Appends vertex to a straight path
+	dtStatus appendVertex(const float* pos, const unsigned char flags, const dtPolyRef ref,
+						  float* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
+						  int* straightPathCount, const int maxStraightPath) const;
+
+	// Appends intermediate portal points to a straight path.
+	dtStatus appendPortals(const int startIdx, const int endIdx, const float* endPos, const dtPolyRef* path,
+						   float* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
+						   int* straightPathCount, const int maxStraightPath, const int options) const;
 	
 	const dtNavMesh* m_nav;				///< Pointer to navmesh data.
 
