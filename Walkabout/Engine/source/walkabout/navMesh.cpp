@@ -1318,7 +1318,7 @@ void NavMesh::render(ObjectRenderInst *ri, SceneRenderState *state, BaseMatInsta
          dd.cancelOverride();
       }
       
-      if(n->mAlwaysRender || Con::getBoolVariable("$Nav::Editor::renderMesh", 1)) dd.renderGroup(0);
+      if((!gEditingMission && n->mAlwaysRender) || (gEditingMission && Con::getBoolVariable("$Nav::Editor::renderMesh", 1))) dd.renderGroup(0);
       if(Con::getBoolVariable("$Nav::Editor::renderPortals")) dd.renderGroup(1);
       if(Con::getBoolVariable("$Nav::Editor::renderBVTree"))  dd.renderGroup(2);
    }
