@@ -83,29 +83,28 @@ void duDebugDrawTorque::vertex(const float x, const float y, const float z, unsi
 {
    if(mQuadsMode)
    {
-      mVertCount++;
-      // Handle quads
-      switch(mVertCount)
+      if(mVertCount == 3)
       {
-      case 1:
-         mStore[0][0] = x;
-         mStore[0][1] = -z;
-         mStore[0][2] = y;
-         break;
-      case 3:
-         mStore[1][0] = x;
-         mStore[1][1] = -z;
-         mStore[1][2] = y;
-         break;
-      case 4:
          _vertex(x, -z, y, color);
          _vertex(mStore[0][0], mStore[0][1], mStore[0][2], color);
          _vertex(mStore[1][0], mStore[1][1], mStore[1][2], color);
+         _vertex(mStore[1][0], mStore[1][1], mStore[1][2], color);
+         _vertex(mStore[2][0], mStore[2][1], mStore[2][2], color);
+         _vertex(x, -z, y, color);
          mVertCount = 0;
-         break;
+      }
+      else
+      {
+         mStore[mVertCount][0] = x;
+         mStore[mVertCount][1] = -z;
+         mStore[mVertCount][2] = y;
+         mVertCount++;
       }
    }
-   _vertex(x, -z, y, color);
+   else 
+   {
+      _vertex(x, -z, y, color);
+   }
 }
 
 /// Submit a vertex
