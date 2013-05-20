@@ -35,20 +35,13 @@
 			</a>
 		</li>
 	</ul>
-	<h1>Patch notes: R1P2</h1>
+	<h1>Patch notes: R1P3</h1>
 	<ul>
-		<li>Former versions introduced changes to <span class="path">Engine/source/gfx/primBuilder.cpp</span>.
-		Those changes are no longer required; you can revert that file using your VCS software, or by fetching the file
-		<a href="https://github.com/GarageGames/Torque3D/blob/master/Engine/source/gfx/primBuilder.cpp">from GitHub</a>.</li>
-		<li>Support for large NavMeshes is officially here! I recommend building them with the nav console open.
-		Some pre-release screenshots have featured a 'time remaining' field in the console; this was removed due to it being completely inaccurate.
-		It will return in future versions!</li>
-		<li>Rendering performance when there is a large NavMesh is pretty poor.
-		I recommend unchecking the 'mesh' tickbox at the top of the nav editor if you have a very large NavMesh in the scene.
-		Just check it on when you need to see the mesh.</li>
-		<li>Rendering performance of a tile's voxels is even worse. Please don't do it.</li>
-		<li>The NavMesh member <span class="code">maxTiles</span> has been removed in favor of calculating this value automatically when a build happens.
-		No more finding out that you didn't set it high enough and some of your mesh didn't build!</li>
+		<li>I've added a member of NavMesh called <span class="code">alwaysRender</span>.
+		It will make the navMesh render outside the editor. Could be useful for demos and so on.</li>
+		<li>The <span class="code">tileSize</span> member is now in 'NavMesh options' instead of 'Advanced options'.</li>
+		<li>The performance of rendering voxels in Tile mode is now pretty acceptable!</li>
+		<li>Should work out-of-the-box with Torque 3D MIT 3.0.</li>
 	</ul>
 </body>
 </html>
