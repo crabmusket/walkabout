@@ -658,7 +658,7 @@ bool ConvexShape::buildPolyList( PolyListContext context, AbstractPolyList *plis
    {
       for(S32 i = 0; i < faceList.size(); i++)
       {
-         const ConvexShape::Face &face = faceList[i];		
+         const ConvexShape::Face &face = faceList[i];
 
          S32 s = face.triangles.size();
          for(S32 j = 0; j < s; j++)
@@ -672,7 +672,7 @@ bool ConvexShape::buildPolyList( PolyListContext context, AbstractPolyList *plis
             plist->vertex(base + face.points[face.triangles[j].p2]);
 
             plist->end();
-         }      
+         }
       }
       return true;
    }

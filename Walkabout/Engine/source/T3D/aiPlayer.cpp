@@ -178,7 +178,7 @@ bool AIPlayer::onAdd()
 }
 
 #ifdef TORQUE_WALKABOUT_ENABLED
-void AIPlayer::onRemove() 
+void AIPlayer::onRemove()
 {
    clearPath();
    clearCover();
