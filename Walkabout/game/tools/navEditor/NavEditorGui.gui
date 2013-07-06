@@ -124,7 +124,7 @@
                canSaveDynamicFields = "0";
                Enabled = "1";
                isContainer = "1";
-               Profile = "GuiTreeViewProfile";
+               Profile = "ToolsGuiTreeViewProfile";
                HorizSizing = "right";
                VertSizing = "bottom";
                Position = "1 1";
