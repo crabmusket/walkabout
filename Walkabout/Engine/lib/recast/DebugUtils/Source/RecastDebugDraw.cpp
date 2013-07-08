@@ -18,7 +18,7 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include "duDebugDraw.h"
+#include "DebugDraw.h"
 #include "RecastDebugDraw.h"
 #include "Recast.h"
 

@@ -17,7 +17,7 @@
 //
 
 #include <math.h>
-#include "duDebugDraw.h"
+#include "DebugDraw.h"
 #include "DetourDebugDraw.h"
 #include "DetourNavMesh.h"
 #include "DetourCommon.h"
