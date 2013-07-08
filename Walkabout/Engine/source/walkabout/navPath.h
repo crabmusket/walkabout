@@ -10,7 +10,7 @@
 #include "scene/sceneObject.h"
 #include "scene/simPath.h"
 #include "navMesh.h"
-#include "recast/DetourNavMeshQuery.h"
+#include <DetourNavMeshQuery.h>
 
 class NavPath: public SceneObject {
    typedef SceneObject Parent;

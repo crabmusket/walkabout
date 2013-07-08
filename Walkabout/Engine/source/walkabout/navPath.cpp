@@ -4,9 +4,9 @@
 // Permission is NOT granted to freely distribute the contents of this file.
 //-----------------------------------------------------------------------------
 
-#include "nav.h"
+#include "torqueRecast.h"
 #include "navPath.h"
-#include "navMeshDraw.h"
+#include "duDebugDrawTorque.h"
 
 #include "console/consoleTypes.h"
 #include "console/engineAPI.h"
@@ -20,7 +20,7 @@
 #include "core/stream/bitStream.h"
 #include "math/mathIO.h"
 
-#include "recast/DetourDebugDraw.h"
+#include <DetourDebugDraw.h>
 
 extern bool gEditingMission;
 

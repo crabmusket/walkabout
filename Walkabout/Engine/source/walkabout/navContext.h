@@ -7,8 +7,8 @@
 #ifndef _NAV_CONTEXT_H_
 #define _NAV_CONTEXT_H_
 
-#include "nav.h"
-#include "recast/Recast.h"
+#include "torqueRecast.h"
+#include <Recast.h>
 
 /// @brief Implements the rcContext interface in Torque.
 class NavContext: public rcContext {

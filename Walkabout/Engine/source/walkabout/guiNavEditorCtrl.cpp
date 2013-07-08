@@ -6,7 +6,7 @@
 
 #include "platform/platform.h"
 #include "guiNavEditorCtrl.h"
-#include "navMeshDraw.h"
+#include "duDebugDrawTorque.h"
 #include "console/engineAPI.h"
 
 #include "console/consoleTypes.h"

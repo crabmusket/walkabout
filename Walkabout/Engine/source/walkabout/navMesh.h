@@ -11,18 +11,18 @@
 
 #include "scene/sceneObject.h"
 #include "collision/concretePolyList.h"
-#include "collision/objPolyList.h"
+#include "recastPolyList.h"
 #include "util/messaging/eventManager.h"
 
-#include "nav.h"
-#include "navMeshDraw.h"
+#include "torqueRecast.h"
+#include "duDebugDrawTorque.h"
 #include "coverPoint.h"
 
-#include "recast/Recast.h"
-#include "recast/DetourNavMesh.h"
-#include "recast/DetourNavMeshBuilder.h"
-#include "recast/duDebugDraw.h"
-#include "recast/DetourNavMeshQuery.h"
+#include <Recast.h>
+#include <DetourNavMesh.h>
+#include <DetourNavMeshBuilder.h>
+#include <DebugDraw.h>
+#include <DetourNavMeshQuery.h>
 
 /// @class NavMesh
 /// Represents a set of bounds within which a Recast navigation mesh is generated.
@@ -262,7 +262,7 @@ private:
 
    /// Intermediate data for tile creation.
    struct TileData {
-      ObjPolyList          geom;
+      RecastPolyList          geom;
       rcHeightfield        *hf;
       rcCompactHeightfield *chf;
       rcContourSet         *cs;

@@ -8,8 +8,8 @@
 
 #include "navMesh.h"
 #include "navContext.h"
-#include "recast/DetourDebugDraw.h"
-#include "recast/RecastDebugDraw.h"
+#include <DetourDebugDraw.h>
+#include <RecastDebugDraw.h>
 
 #include "math/mathUtils.h"
 #include "math/mRandom.h"
@@ -1367,7 +1367,7 @@ void NavMesh::renderTileData(duDebugDrawTorque &dd, U32 tile)
 
       dd.beginGroup(1);
       int col = duRGBA(255, 0, 255, 255);
-      ObjPolyList &in = mTileData[tile].geom;
+      RecastPolyList &in = mTileData[tile].geom;
       dd.begin(DU_DRAW_LINES);
       const F32 *verts = in.getVerts();
       const S32 *tris = in.getTris();
