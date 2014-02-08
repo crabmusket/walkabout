@@ -3,11 +3,13 @@
 <html>
 <head>
 	<title>Installation Guide | Walkabout</title>
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
-	<img src="images/walkabout.png" class="banner" />
+	<div class="container"><div class="row">
+	<a href="WalkaboutDocumentation.html"><img src="images/walkabout.png" class="banner" /></a>
 	<p class="title">INSTALLATION GUIDE</p>
 
 	<ol class="toc">
@@ -32,7 +34,7 @@
 	<p>In the instructions below, I want to make as few assumptions as I can about where you’ve installed Torque and how your projects are laid out.
 	With that in mind, here are some abbreviations I will use:</p>
 
-	<table>
+	<table class="table">
 		<tr><th>Abbreviation</th> <th>Explanation</th> <th>Example</th></tr>
 		<tr><td>install directory</td> <td>The location you installed Torque 3D.</td> <td class="path">C:\Torque\Torque 3D 1.1 Final</td></tr>
 		<tr><td>engine directory</td> <td>The location of Torque’s engine source files.</td> <td class="path">C:\Torque\Torque 3D 1.1 Final\Engine\source</td></tr>
@@ -52,11 +54,9 @@
 		<li>In <span class="path">project directory/buildFiles/config</span>, open <span class="path">projectCode.conf</span> with a regular text editor
 		(Notepad, Notepad++, and WordPad should be fine. Do not use Microsoft Word, OpenOffice, or other word processors!).<br />
 		After these lines:<br />
-		<pre>
-   // Here is an example of how to include your project specific code 
+<pre><code>   // Here is an example of how to include your project specific code 
    // In this case all the code in the "custom" folder in your project's source directory would be added
-   // addSrcDir('../source/custom');
-		</pre>
+   // addSrcDir('../source/custom');</code></pre>
 		Add this: <br />
 		<pre>   includeModule( 'walkabout' );</pre></li>
 		<li>In <span class="path">project directory</span>, double-click on <span class="path">generateProjects.bat</span>.</li>
@@ -86,6 +86,6 @@
 
 	<p>Finally, follow steps 3-6 from <a href="#easy">Easy install</a>.
 	Note that step 5 will rewrite your Visual Studio project files, so if you’ve modified them, you will need to redo those modifications.</p>
-
+	</div></div>
 </body>
 </html>

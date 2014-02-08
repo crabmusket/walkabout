@@ -3,11 +3,13 @@
 <html>
 <head>
 	<title>Documentation | Walkabout</title>
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
-	<img src="images/walkabout.png" class="banner" />
+	<div class="container"><div class="row">
+	<a href="../Readme.html"><img src="images/walkabout.png" class="banner" /></a>
 	<p class="title">DOCUMENTATION HUB</p>
 	<ul class="tiles">
 		<li>
@@ -31,17 +33,16 @@
 		<li>
 			<a href="WalkaboutEngineModifications.html"
 			   style="background-image:url('images/engine.png');">
-				<p>Under the Hood</p>
+				<p>In Depth</p>
 			</a>
 		</li>
 	</ul>
-	<h1>Patch notes: R1P3</h1>
+	<h1>Patch notes: R1P4</h1>
 	<ul>
-		<li>I've added a member of NavMesh called <span class="code">alwaysRender</span>.
-		It will make the navMesh render outside the editor. Could be useful for demos and so on.</li>
-		<li>The <span class="code">tileSize</span> member is now in 'NavMesh options' instead of 'Advanced options'.</li>
-		<li>The performance of rendering voxels in Tile mode is now pretty acceptable!</li>
-		<li>Should work out-of-the-box with Torque 3D MIT 3.0.</li>
+		<li>Should work out-of-the-box with Torque 3D MIT 3.5.</li>
+    <li>Added <code>waterHandling</code> to NavMesh.</li>
+    <li>Documentation updated.</li>
 	</ul>
+	</div></div>
 </body>
 </html>

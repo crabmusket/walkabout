@@ -3,11 +3,13 @@
 <html>
 <head>
 	<title>Under the Hood | Walkabout</title>
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
-	<img src="images/walkabout.png" class="banner" />
+	<div class="container"><div class="row">
+	<a href="WalkaboutDocumentation.html"><img src="images/walkabout.png" class="banner" /></a>
 	<p class="title">ENGINE MODIFICATIONS</p>
 
 	<ol class="toc">
@@ -126,14 +128,13 @@
 	<p>There was only one change made to the rendering engine to accommodate Recast’s debug draw functionality.
 	The debug draw functions expect an OpenGL-like interface, where a drawer makes arbitrary calls like:</p>
 
-<pre>
-   BEGIN(TriangleList);
+<pre><code>   BEGIN(TriangleList);
    VERTEX(x1, y1, z1);
    VERTEX(x2, y2, z2);
    ...
    VERTEX(xn, yn, zn);
    END();
-</pre>
+</code></pre>
 
 	<p>However, the PrimBuilder class expects to know the exact number of vertices beforehand, which Recast does not provide.
 	So we need to make a small change to the macro definitions in PrimBuilder to allow the vertex buffer to grow if the number of vertices exceeds the initial expectation.</p>
@@ -146,5 +147,6 @@
 	However, you need to include the module in the <span class="path">projectCode.conf</span> file for each project you want to use Walkabout in.</p>
 	<p class="path">Tools/projectGenerator/modules/walkabout.inc</p>
 	<p class="path">your project/buildFiles/config/projectCode.conf</p>
+  </div></div>
 </body>
 </html>

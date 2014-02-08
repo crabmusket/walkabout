@@ -4,12 +4,8 @@ html {
 	overflow-y: scroll;
 }
 
-body {
-	width: 640px;
-	padding: 36pt 0;
-	margin: 0px auto;
-	font-family: "Arial";
-	font-size: 11pt;
+.container {
+	max-width: 640px;
 }
 
 /** Images **/
@@ -52,7 +48,6 @@ h3 {
 
 p {
 	margin: 5px;
-	text-indent: 1.5em;
 }
 
 p.title {
@@ -61,21 +56,12 @@ p.title {
 	margin: 1em 0em;
 }
 
-p.important {
-	display: block;
-	margin: 1em auto;
-	width: 400pt;
-	padding: 5px;
-	background: #FFFFA0;
-	text-indent: 0;
-}
-
 p.caption {
 	text-align: center;
 	font-style: italic;
 	margin-bottom: 1em;
 }
-
+/*
 table {
 	border-top: 1px solid gray;
 	border-bottom: 1px solid gray;
@@ -86,7 +72,7 @@ td {
 	vertical-align: top;
 	padding: 0.2em 0.5em;
 }
-
+*/
 /** Code and path formatting **/
 
 pre {
@@ -102,44 +88,22 @@ pre {
 	text-decoration: underline;
 }
 
-.code {
-	background: #F0F0F0;
-	font-family: "Courier";
-}
-
 /** Lists **/
 
-li {
-	margin: 4px 0;
-}
-
-ol.toc li {
-	margin: 0px;
-}
-
-ol li {
-	margin-top: 1em;
-}
-
 ol ol {
-	list-style-type: /*none;*/lower-alpha;
+	list-style-type: lower-alpha;
 }
 
 ol ol ol {
-	list-style-type: none;/*lower-roman;*/
+	list-style-type: none;
 }
-
-ol.eula {
-	list-style-type: lower-alpha;
-	padding-left: 60px;
-}
-
 /** Special 'tiles' list **/
 
 ul.tiles {
 	list-style-type: none;
-	width: 450px;
+	width: 424px;
 	margin: 20px auto;
+	padding: 0;
 }
 
 ul.tiles li {
@@ -147,7 +111,7 @@ ul.tiles li {
 	border: 1px solid gray;
 	/*background: #F0F0F0;*/
 	width: 200px;
-	height: 100px;
+	height: 102px;
 	margin: 5px;
 	border-radius: 3px;
 }
@@ -168,9 +132,10 @@ ul.tiles li a:hover {
 
 ul.tiles li a p {
 	font-size: 20pt;
-	font-weight: bold;
-	font-family: "Droid Serif";
 	text-decoration: none;
-	color: black;
+	color: rgb(51, 51, 51);
 	text-indent: 0px;
+	background-color: rgba(255, 255, 255, 0.6);
+	margin-bottom: 0;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
