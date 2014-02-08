@@ -96,12 +96,10 @@ enum PolyListContext
    /// selection from an editor or other tool.
    PLC_Selection,
 
-#ifdef TORQUE_WALKABOUT_ENABLED
    /// A hint that the polylist is used for
    /// building a representation of the environment
    /// used for navigation.
    PLC_Navigation,
-#endif // TORQUE_WALKABOUT_ENABLED
 
    /// A hint that the polyist will be used
    /// to export geometry and would like to have

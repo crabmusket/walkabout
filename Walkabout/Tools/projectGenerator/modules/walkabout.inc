@@ -2,6 +2,7 @@
 beginModule('walkabout');
 
 	addProjectDefine("TORQUE_WALKABOUT_ENABLED");
+	addProjectDefine("TORQUE_WALKABOUT_EXTRAS_ENABLED");
 	addSrcDir(getEngineSrcDir() . 'walkabout', true);
 
 	includeLib( 'librecast' );

@@ -288,16 +288,11 @@ void GroundPlane::buildConvex( const Box3F& box, Convex* convex )
    }
 }
 
-#ifdef TORQUE_WALKABOUT_ENABLED
 bool GroundPlane::buildPolyList( PolyListContext context, AbstractPolyList* polyList, const Box3F& box, const SphereF& )
-#else
-bool GroundPlane::buildPolyList( PolyListContext context, AbstractPolyList* polyList, const Box3F&, const SphereF& )
-#endif // TORQUE_WALKABOUT_ENABLED
 {
    polyList->setObject( this );
    polyList->setTransform( &MatrixF::Identity, Point3F( 1.0f, 1.0f, 1.0f ) );
 
-#ifdef TORQUE_WALKABOUT_ENABLED
    if(context == PLC_Navigation)
    {
       F32 z = getPosition().z;
@@ -331,7 +326,6 @@ bool GroundPlane::buildPolyList( PolyListContext context, AbstractPolyList* poly
 
       return true;
    }
-#endif // TORQUE_WALKABOUT_ENABLED
 
    Box3F planeBox = getPlaneBox();
    polyList->addBox( planeBox, mMaterial );
@@ -358,7 +352,7 @@ void GroundPlane::prepRenderImage( SceneRenderState* state )
    PROFILE_SCOPE( GroundPlane_prepRender );
 
    // Update the geometry.
-   createGeometry( state->getFrustum() );
+   createGeometry( state->getCullingFrustum() );
    if( mVertexBuffer.isNull() )
       return;
 
