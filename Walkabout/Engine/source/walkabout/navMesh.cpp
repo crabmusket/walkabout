@@ -33,6 +33,13 @@ const U32 NavMesh::mMaxVertsPerPoly = 3;
 
 SimObjectPtr<SimSet> NavMesh::smServerSet = NULL;
 
+ImplementEnumType(NavMeshWaterMethod,
+   "The method used to include water surfaces in the NavMesh.\n")
+   { NavMesh::Ignore,     "Ignore",     "Ignore all water surfaces.\n" },
+   { NavMesh::Solid,      "Solid",      "Treat water surfaces as solid and walkable.\n" },
+   { NavMesh::Impassable, "Impassable", "Treat water as an impassable obstacle.\n" },
+EndImplementEnumType;
+
 SimSet *NavMesh::getServerSet()
 {
    if(!smServerSet)
@@ -128,6 +135,8 @@ NavMesh::NavMesh()
    nm = NULL;
    ctx = NULL;
 
+   mWaterMethod = Ignore;
+
    dMemset(&cfg, 0, sizeof(cfg));
    mCellSize = mCellHeight = 0.2f;
    mWalkableHeight = 2.0f;
@@ -207,6 +216,9 @@ void NavMesh::initPersistFields()
 
    addField("fileName", TypeString, Offset(mFileName, NavMesh),
       "Name of the data file to store this navmesh in (relative to engine executable).");
+
+   addField("waterMethod", TYPEID<NavMeshWaterMethod>(), Offset(mWaterMethod, NavMesh),
+      "The method to use to handle water surfaces.");
 
    addFieldV("cellSize", TypeF32, Offset(mCellSize, NavMesh), &ValidCellSize,
       "Length/width of a voxel.");
@@ -811,7 +823,16 @@ unsigned char *NavMesh::buildTileData(const Tile &tile, TileData &data, U32 &dat
    info.context = PLC_Navigation;
    info.boundingBox = box;
    info.polyList = &data.geom;
-   getContainer()->findObjects(box, StaticObjectType, buildCallback, &info);
+   info.key = this;
+   getContainer()->findObjects(box, StaticShapeObjectType | TerrainObjectType, buildCallback, &info);
+
+   // Parse water objects into the same list, but remember how much geometry was /not/ water.
+   U32 nonWaterVertCount = data.geom.getVertCount();
+   U32 nonWaterTriCount = data.geom.getTriCount();
+   if(mWaterMethod != Ignore)
+   {
+      getContainer()->findObjects(box, WaterObjectType, buildCallback, &info);
+   }
 
    // Check for no geometry.
    if(!data.geom.getVertCount())
@@ -843,11 +864,23 @@ unsigned char *NavMesh::buildTileData(const Tile &tile, TileData &data, U32 &dat
    }
    dMemset(areas, 0, data.geom.getTriCount() * sizeof(unsigned char));
 
-   // Filter triangles by angle and rasterize.
-   rcMarkWalkableTriangles(ctx, cfg.walkableSlopeAngle,
+   // Mark walkable triangles with the appropriate area flags, and rasterize.
+   if(mWaterMethod == Solid)
+   {
+      // Treat water as solid: i.e. mark areas as walkable based on angle.
+      rcMarkWalkableTriangles(ctx, cfg.walkableSlopeAngle,
+         data.geom.getVerts(), data.geom.getVertCount(),
+         data.geom.getTris(), data.geom.getTriCount(), areas);
+   }
+   else
+   {
+      // Treat water as impassable: leave all area flags 0.
+      rcMarkWalkableTriangles(ctx, cfg.walkableSlopeAngle,
+         data.geom.getVerts(), nonWaterVertCount,
+         data.geom.getTris(), nonWaterTriCount, areas);
+   }
+   rcRasterizeTriangles(ctx,
       data.geom.getVerts(), data.geom.getVertCount(),
-      data.geom.getTris(), data.geom.getTriCount(), areas);
-   rcRasterizeTriangles(ctx, data.geom.getVerts(), data.geom.getVertCount(),
       data.geom.getTris(), areas, data.geom.getTriCount(),
       *data.hf, cfg.walkableClimb);
 

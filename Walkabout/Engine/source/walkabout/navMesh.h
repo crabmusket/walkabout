@@ -88,6 +88,17 @@ public:
    U32 mMaxPolysPerTile;
    /// @}
 
+   /// @name Water
+   /// @{
+   enum WaterMethod {
+      Ignore,
+      Solid,
+      Impassable
+   };
+
+   WaterMethod mWaterMethod;
+   /// @}
+
    /// @}
 
    /// Return the index of the tile included by this point.
@@ -392,5 +403,8 @@ private:
    /// Use this object to manage update events.
    static SimObjectPtr<EventManager> smEventManager;
 };
+
+typedef NavMesh::WaterMethod NavMeshWaterMethod;
+DefineEnumType(NavMeshWaterMethod);
 
 #endif
