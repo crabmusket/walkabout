@@ -67,6 +67,11 @@ private:
    void throwCallback( const char *name );
 
 #ifdef TORQUE_WALKABOUT_ENABLED
+public:
+   /// Get cover we are moving to.
+   CoverPoint *getCover() { return mCoverData.cover; }
+
+private:
    /// Should we jump?
    enum JumpStates {
       None,  ///< No, don't jump.
@@ -114,9 +119,6 @@ private:
 
    /// Stop searching for cover.
    void clearCover();
-
-   /// Get cover we are moving to.
-   CoverPoint *getCover() { return mCoverData.cover; }
 
    /// Information about a target we're following.
    struct FollowData {

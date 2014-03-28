@@ -880,23 +880,32 @@ bool AIPlayer::findCover(const Point3F &from, F32 radius)
    // Go to cover!
    if(s.point)
    {
-      clearCover();
-      clearFollow();
+      // Calling setPathDestination clears cover...
+      bool foundPath = setPathDestination(s.point->getPosition());
+      // Now store the cover info.
       mCoverData.cover = s.point;
       s.point->setOccupied(true);
-      return setPathDestination(s.point->getPosition());
+      return foundPath;
    }
    return false;
 }
 
-DefineEngineMethod(AIPlayer, findCover, bool, (Point3F from, F32 radius),,
+DefineEngineMethod(AIPlayer, findCover, S32, (Point3F from, F32 radius),,
    "@brief Tells the AI to find cover nearby.\n\n"
 
    "@param from   Location to find cover from (i.e., enemy position).\n"
    "@param radius Distance to search for cover.\n"
-   "@return True if cover was found.\n\n")
+   "@return Cover point ID if cover was found, -1 otherwise.\n\n")
 {
-   return object->findCover(from, radius);
+   if(object->findCover(from, radius))
+   {
+      CoverPoint* cover = object->getCover();
+      return cover ? cover->getId() : -1;
+   }
+   else
+   {
+      return -1;
+   }
 }
 
 NavMesh *AIPlayer::findNavMesh() const
