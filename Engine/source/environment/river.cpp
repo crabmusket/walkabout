@@ -1295,15 +1295,15 @@ bool River::collideBox(const Point3F &start, const Point3F &end, RayInfo* info)
 
 bool River::buildPolyList( PolyListContext context, AbstractPolyList* polyList, const Box3F& box, const SphereF& sphere )
 {
-	Vector<const RiverSegment*> hitSegments;
-	for ( U32 i = 0; i < mSegments.size(); i++ )
-	{
-		const RiverSegment &segment = mSegments[i];
+   Vector<const RiverSegment*> hitSegments;
+   for ( U32 i = 0; i < mSegments.size(); i++ )
+   {
+      const RiverSegment &segment = mSegments[i];
       if ( segment.worldbounds.isOverlapped( box ) )
-		{
-			hitSegments.push_back( &segment );
+      {
+         hitSegments.push_back( &segment );
       }
-	}
+   }
 
    if ( !hitSegments.size() )
       return false;
@@ -1313,13 +1313,13 @@ bool River::buildPolyList( PolyListContext context, AbstractPolyList* polyList, 
 
    for ( U32 i = 0; i < hitSegments.size(); i++ )
    {
-		const RiverSegment* segment = hitSegments[i];
+      const RiverSegment* segment = hitSegments[i];
       for ( U32 k = 0; k < 2; k++ )
-	   {
+      {
          // gIdxArray[0] gives us the top plane (see table definition).
-		   U32 idx0 = gIdxArray[0][k][0];
-		   U32 idx1 = gIdxArray[0][k][1];
-		   U32 idx2 = gIdxArray[0][k][2];
+         U32 idx0 = gIdxArray[0][k][0];
+         U32 idx1 = gIdxArray[0][k][1];
+         U32 idx2 = gIdxArray[0][k][2];
 
          const Point3F &v0 = (*segment)[idx0];
          const Point3F &v1 = (*segment)[idx1];
@@ -1337,7 +1337,7 @@ bool River::buildPolyList( PolyListContext context, AbstractPolyList* polyList, 
          polyList->vertex(i0+2);
          polyList->plane(i0, i0+1, i0+2);
          polyList->end();
-	   }
+      }
    }
 
    return true;
